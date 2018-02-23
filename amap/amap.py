@@ -1,15 +1,14 @@
+import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-import os
-
-from brain_processor import BrainProcessor
-from brain_registration import BrainRegistration
+from amap.brain.brain_processor import BrainProcessor
+from amap.registration.brain_registration import BrainRegistration
 
 
 def process(_args):
     sample_name = _args.sample_name
     brain = BrainProcessor(args.target_brain, args.output_folder, _args.x_pix_mm, _args.y_pix_mm, _args.z_pix_mm)
-    target_brain_path = os.path.join(args.output_folder, '{}_downsampled_filtered.nii'.format(sample_name))
+    target_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
     brain.save(target_brain_path)
     brain_reg = BrainRegistration(sample_name, target_brain_path, args.output_folder)  # TODO: check
     brain_reg.register_affine()  # TODO: have it as option
@@ -37,6 +36,10 @@ if __name__ == '__main__':
                         help='Pixel size of the data in the third dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
+    parser.add_argument('-s', '--preprocessed-suffix', dest='preprocessed_suffix', type=str,
+                        default='downsampled_filtered',
+                        help='The suffix to append to the name of the image after preprocessing '
+                             '(downsampling and filtering)')
 
     args = parser.parse_args()
 

@@ -7,7 +7,7 @@ class RegistrationParams(object):
         self.freeform_reg_program_path = self.__get_binary('freeform')
         self.segmentation_program_path = self.__get_binary('segmentation')
 
-        from config import config  # Avoids import in tests
+        from amap.config import config  # Avoids import in tests
         self.config = config
 
         self.affine_reg_pyramid_steps = ('-ln', config['affine']['n_steps'])
@@ -82,7 +82,7 @@ class RegistrationParams(object):
         return self.format_param_pairs(self.get_segmentation_params())
 
     def __get_binary(self, program_type):
-        from config import os_folder_name
+        from amap.config import os_folder_name
         nifty_reg_binaries_folder = os.path.abspath(os.path.join('..', 'niftyReg', 'bin', os_folder_name))
 
         program_names = {

@@ -2,7 +2,7 @@ import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage import morphology
 
-from brain_io import BrainIo
+from amap.brain.brain_io import BrainIo
 
 
 class BrainProcessor(object):
@@ -18,7 +18,7 @@ class BrainProcessor(object):
         self.output_folder = output_folder
 
     def get_atlas_pix_sizes(self):
-        from config import config
+        from amap.config.config import config
         atlas = BrainIo.load_nii(config['atlas']['path'])
         pixel_sizes = atlas.header.get_zooms()
         if pixel_sizes != (0, 0, 0):

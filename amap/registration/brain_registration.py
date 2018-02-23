@@ -1,9 +1,9 @@
-import sys
 import os
+import sys
 
-from brain_io import BrainIo
-from registration_params import RegistrationParams
-from run_command import safe_execute_command, SafeExecuteCommandError
+from amap.brain.brain_io import BrainIo
+from amap.registration.registration_params import RegistrationParams
+from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
 
 class BrainRegistration(object):

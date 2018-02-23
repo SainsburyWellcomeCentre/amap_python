@@ -1,23 +1,23 @@
 import pytest
 
-import brain_registration
-from test_registration_params import TestRegistrationParams
+from amap.registration import brain_registration
+from test_registration_params import RegistrationParamsMock
 
 
-class TestBrainReg(brain_registration.BrainRegistration):
+class BrainRegMock(brain_registration.BrainRegistration):
     def get_reg_params(self):
-        return TestRegistrationParams()
+        return RegistrationParamsMock()
 
     def sanitise_inputs(self):
         pass
 
 
 @pytest.fixture
-def brain_reg_fixture(monkeypatch):
+def brain_reg_fixture():
     sample_name = 'test_brain'
     target_brain_path = '/home/bob/brains/test_brain_downsampled.nii'
     output_folder = '/home/bob/output_brains/'
-    reg = TestBrainReg(sample_name, target_brain_path, output_folder)
+    reg = BrainRegMock(sample_name, target_brain_path, output_folder)
     return reg
 
 

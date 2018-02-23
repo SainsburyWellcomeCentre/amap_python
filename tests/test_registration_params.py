@@ -1,9 +1,9 @@
 import pytest
 
-import registration_params
+from amap.registration import registration_params
 
 
-class TestRegistrationParams(registration_params.RegistrationParams):
+class RegistrationParamsMock(registration_params.RegistrationParams):
     def __init__(self):
         self.affine_reg_program_path = '/usr/local/bin/reg_aladin'
         self.freeform_reg_program_path = '/usr/local/bin/reg_f3d'
@@ -41,7 +41,7 @@ class TestRegistrationParams(registration_params.RegistrationParams):
 
 @pytest.fixture()
 def params():
-    return TestRegistrationParams()
+    return RegistrationParamsMock()
 
 
 def test_format_affine_params(params):

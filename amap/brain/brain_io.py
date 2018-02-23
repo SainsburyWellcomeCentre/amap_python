@@ -1,7 +1,9 @@
 import os
-import numpy as np
 import psutil
+
+import numpy as np
 from skimage import transform
+
 import tifffile
 import nibabel as nib
 
