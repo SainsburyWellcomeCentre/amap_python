@@ -1,4 +1,8 @@
 import os
+import sys
+cwd = os.path.abspath('.')
+sys.path.insert(0, cwd)
+
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from amap.brain.brain_processor import BrainProcessor
@@ -7,21 +11,24 @@ from amap.registration.brain_registration import BrainRegistration
 
 def process(_args):
     sample_name = _args.sample_name
-    brain = BrainProcessor(args.target_brain, args.output_folder, _args.x_pix_mm, _args.y_pix_mm, _args.z_pix_mm)
-    target_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
-    brain.save(target_brain_path)
-    brain_reg = BrainRegistration(sample_name, target_brain_path, args.output_folder)  # TODO: check
+    brain = BrainProcessor(args.target_brain_path, args.output_folder, _args.x_pix_mm, _args.y_pix_mm, _args.z_pix_mm)
+    filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
+    brain.save(filtered_brain_path)
+    brain_reg = BrainRegistration(sample_name, filtered_brain_path, args.output_folder)  # TODO: check
     brain_reg.register_affine()  # TODO: have it as option
     brain_reg.register_freeform()
     brain_reg.segment()
     return brain_reg.registered_atlas_img_path
 
 
-if __name__ == '__main__':
+def get_parser():
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     # FIXME: add options for all replacing default params and load params from config
-    parser.add_argument('sample-name', dest='sample_name', type=str, help='Name of the sample')
-    parser.add_argument('output-folder', dest='output_folder', type=str,
+    parser.add_argument('target-brain-path', metavar='target_brain_path', type=str,
+                        help='The path to the brain to analyse')
+    parser.add_argument('sample-name', metavar='sample_name', type=str,
+                        help='The name of the sample to be used for new files')
+    parser.add_argument('output-folder', metavar='output_folder', type=str,
                         help='The folder in which to save all the temporary '
                              'and final output of the registration process')
     parser.add_argument('-x', '--x-pixel-mm', dest='x_pixel_mm', type=float, default=0.001,
@@ -41,6 +48,10 @@ if __name__ == '__main__':
                         help='The suffix to append to the name of the image after preprocessing '
                              '(downsampling and filtering)')
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = get_parser()
 
     print("Segmentation finished. Result can be found here: {}".format(process(args)))
