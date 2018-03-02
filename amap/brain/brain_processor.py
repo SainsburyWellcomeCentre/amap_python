@@ -2,6 +2,7 @@ import os
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage import morphology
+from tqdm import trange
 
 from amap.brain.brain_io import BrainIo
 
@@ -44,18 +45,21 @@ class BrainProcessor(object):
 
         :return:
         """
-        brain.astype(np.float64)
-        for i in brain.shape[-1]:
-            img_plane = brain[..., i]
-            img_plane = despeckle_by_erode_dilate(img_plane)
-            img_plane = pseudo_flatfield(img_plane)
-            brain[..., i] = img_plane
-        normalise_to_16_bits(brain)
-        brain.astype(np.uint16)
+        brain = brain.astype(np.float64, copy=False)
+        for i in trange(brain.shape[-1], desc='filtering'):
+            brain[..., i] = filter_plane_for_registration(brain[..., i])  # OPTIMISE: see if in place better
+        brain = scale_to_16_bits(brain)
+        brain = brain.astype(np.uint16, copy=False)
         return brain
 
     def save(self, dest_path):
         BrainIo.to_nii(self.target_brain, dest_path)
+
+
+def filter_plane_for_registration(img_plane):
+    img_plane = despeckle_by_opening(img_plane)
+    img_plane = pseudo_flatfield(img_plane)
+    return img_plane
 
 
 def pseudo_flatfield(img_plane, sigma=5, size=15):  # FIXME: not using param
