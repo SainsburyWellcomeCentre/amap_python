@@ -11,10 +11,16 @@ from amap.registration.brain_registration import BrainRegistration
 
 def process(_args):
     sample_name = _args.sample_name
-    print("Preprocessing")
-    brain = BrainProcessor(args.target_brain_path, args.output_folder, _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
-    filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
-    brain.save(filtered_brain_path)
+    if _args.preprocess:
+        print("Preprocessing")
+        brain = BrainProcessor(args.target_brain_path, args.output_folder,
+                               _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
+        brain.filter()
+        filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
+        brain.save(filtered_brain_path)
+    else:
+        filtered_brain_path = _args.target_brain_path
+    print("Registering")
     brain_reg = BrainRegistration(sample_name, filtered_brain_path, args.output_folder)  # TODO: check
     print("\tStarting affine registration")
     brain_reg.register_affine()  # TODO: have it as option
@@ -48,6 +54,8 @@ def get_parser():
                         help='Pixel size of the data in the third dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
+    parser.add_argument('-p', '--preprocess', action='store_true',
+                        help='Whether the target brain needs to be preprocessed (downsampled/filtered) or not')
     parser.add_argument('-s', '--preprocessed-suffix', dest='preprocessed_suffix', type=str,
                         default='downsampled_filtered',
                         help='The suffix to append to the name of the image after preprocessing '
