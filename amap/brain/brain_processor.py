@@ -46,7 +46,7 @@ class BrainProcessor(object):
         BrainIo.to_nii(self.target_brain, dest_path)
 
 
-def pseudo_flatfield(img_plane, sigma=5, size=15):
+def pseudo_flatfield(img_plane, sigma=5, size=15):  # FIXME: not using param
     # TODO: check gausian filter mode (one of {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’})
     filtered_img = gaussian_filter(img_plane, sigma)
     return img_plane / (filtered_img + 1)
@@ -56,8 +56,7 @@ def normalise_to_16_bits(img):
     return (img / img.max()) * 2**16
 
 
-def despeckle_by_erode_dilate(img_plane, radius=2):  # WARNING: inplace operation
+def despeckle_by_opening(img_plane, radius=2):  # WARNING: inplace operation
     kernel = morphology.disk(radius)
-    morphology.erosion(img_plane, out=img_plane, selem=kernel)
-    morphology.dilation(img_plane, out=img_plane, selem=kernel)
+    morphology.opening(img_plane, out=img_plane, selem=kernel)
     return img_plane
