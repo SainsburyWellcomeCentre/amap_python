@@ -11,13 +11,18 @@ from amap.registration.brain_registration import BrainRegistration
 
 def process(_args):
     sample_name = _args.sample_name
+    print("Preprocessing")
     brain = BrainProcessor(args.target_brain_path, args.output_folder, _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
     filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
     brain.save(filtered_brain_path)
     brain_reg = BrainRegistration(sample_name, filtered_brain_path, args.output_folder)  # TODO: check
+    print("\tStarting affine registration")
     brain_reg.register_affine()  # TODO: have it as option
+    print("\tStarting freeform registration")
     brain_reg.register_freeform()
+    print("\tStarting segmentation")
     brain_reg.segment()
+    print("Done")
     return brain_reg.registered_atlas_img_path
 
 
