@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage import morphology
@@ -20,11 +21,21 @@ class BrainProcessor(object):
     def filter(self):
         br = BrainProcessor.filter_for_registration(self.target_brain)
         self.target_brain = np.flip(np.transpose(br, (1, 2, 0)), 2)  # OPTIMISE: see if way to specify in the nii transform instead
+
+    @staticmethod
+    def get_atlas_pix_sizes():
+        from amap.config.config import config_obj
+        config_atlas_path = config_obj['atlas']['path']
+        if config_atlas_path:
+            atlas_path = config_atlas_path
+        else:
+            atlas_path = os.path.join(*config_obj['atlas']['default_path'])
+        atlas = bio.load_nii(atlas_path)
         pixel_sizes = atlas.header.get_zooms()
         if pixel_sizes != (0, 0, 0):
             return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
         else:
-            return config['atlas']['pixel_size']
+            return config_obj['atlas']['pixel_size']
 
     @staticmethod
     def filter_for_registration(brain):
