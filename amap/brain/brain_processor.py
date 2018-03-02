@@ -49,6 +49,7 @@ class BrainProcessor(object):
 
 def pseudo_flatfield(img_plane, sigma=5, size=15):  # FIXME: not using param
     # TODO: check gausian filter mode (one of {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’})
+    img_plane = img_plane.copy()  # FIXME: check if necessary
     filtered_img = gaussian_filter(img_plane, sigma)
     return img_plane / (filtered_img + 1)
 
