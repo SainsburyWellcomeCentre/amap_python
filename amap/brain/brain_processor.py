@@ -26,7 +26,8 @@ class BrainProcessor(object):
         else:
             return config['atlas']['pixel_size']
 
-    def filter_for_registration(self, brain):
+    @staticmethod
+    def filter_for_registration(brain):
         """
         From Alex Brown
 
