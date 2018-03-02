@@ -28,11 +28,12 @@ class RegistrationParams(object):
         self.floating_image_histo_n_bins = ('--fbn', freeform_config['histo_n_bins']['floating'])
 
         # FIXME: see if need to compute paths below if default
-        self.default_atlas_path = atlas_config['default_path']
-        self.atlas_path = atlas_config['path']
-        self.atlas_brain_path = atlas_config['brain_path']
         atlas_config = self.config['atlas']
 
+        self.default_atlas_path = os.path.abspath(os.path.join(*atlas_config['default_path']))
+        self.default_atlas_brain_path = os.path.abspath(os.path.join(*atlas_config['default_brain_path']))
+        self.atlas_path = atlas_config['path'] if atlas_config['path'] else self.default_atlas_path
+        self.atlas_brain_path = atlas_config['brain_path'] if atlas_config['brain_path'] else self.default_atlas_brain_path
         pixel_sizes = atlas_config['pixel_size']  # WARNING: mm
         self.atlas_x_pix_size = pixel_sizes['x']
         self.atlas_y_pix_size = pixel_sizes['y']
