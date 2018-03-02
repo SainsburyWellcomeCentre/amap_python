@@ -52,8 +52,9 @@ def pseudo_flatfield(img_plane, sigma=5, size=15):  # FIXME: not using param
     return img_plane / (filtered_img + 1)
 
 
-def normalise_to_16_bits(img):
-    return (img / img.max()) * 2**16
+def scale_to_16_bits(img):
+    normalised = img / img.max()
+    return normalised * (2**16 - 1)
 
 
 def despeckle_by_opening(img_plane, radius=2):  # WARNING: inplace operation
