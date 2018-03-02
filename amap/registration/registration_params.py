@@ -3,17 +3,17 @@ import os
 
 class RegistrationParams(object):
     def __init__(self):
+        from amap.config.config import config_obj  # Avoids import in tests
+        self.config = config_obj
+
         self.affine_reg_program_path = self.__get_binary('affine')
         self.freeform_reg_program_path = self.__get_binary('freeform')
         self.segmentation_program_path = self.__get_binary('segmentation')
 
-        from amap.config import config  # Avoids import in tests
-        self.config = config
+        self.affine_reg_pyramid_steps = ('-ln', self.config['affine']['n_steps'])
+        self.affine_reg_used_pyramid_steps = ('-lp', self.config['affine']['use_n_steps'])
 
-        self.affine_reg_pyramid_steps = ('-ln', config['affine']['n_steps'])
-        self.affine_reg_used_pyramid_steps = ('-lp', config['affine']['use_n_steps'])
-
-        freeform_config = config['freeform']
+        freeform_config = self.config['freeform']
         self.freeform_reg_pyramid_steps = ('-ln', freeform_config['n_steps'])
         self.freeform_reg_used_pyramid_steps = ('-lp', freeform_config['use_n_steps'])
 
@@ -28,14 +28,15 @@ class RegistrationParams(object):
         self.floating_image_histo_n_bins = ('--fbn', freeform_config['histo_n_bins']['floating'])
 
         # FIXME: see if need to compute paths below if default
-        atlas_config = config['atlas']
         self.default_atlas_path = atlas_config['default_path']
         self.atlas_path = atlas_config['path']
         self.atlas_brain_path = atlas_config['brain_path']
-        self.atlas_x_pix_size = atlas_config['x_pixel_size']  # WARNING: mm
-        self.atlas_y_pix_size = atlas_config['y_pixel_size']  # WARNING: mm
-        self.atlas_z_pix_size = atlas_config['z_pixel_size']  # WARNING: mm
+        atlas_config = self.config['atlas']
 
+        pixel_sizes = atlas_config['pixel_size']  # WARNING: mm
+        self.atlas_x_pix_size = pixel_sizes['x']
+        self.atlas_y_pix_size = pixel_sizes['y']
+        self.atlas_z_pix_size = pixel_sizes['z']
 
     def get_affine_reg_params(self):
         affine_params = [
