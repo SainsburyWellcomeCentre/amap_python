@@ -84,8 +84,8 @@ class RegistrationParams(object):
         return self.format_param_pairs(self.get_segmentation_params())
 
     def __get_binary(self, program_type):
-        from amap.config import os_folder_name
-        nifty_reg_binaries_folder = os.path.abspath(os.path.join('..', 'niftyReg', 'bin', os_folder_name))
+        from amap.config.config import os_folder_name
+        nifty_reg_binaries_folder = os.path.abspath(os.path.join('.', 'niftyReg', 'bin', os_folder_name))
 
         program_names = {
             'affine': 'reg_aladin',
