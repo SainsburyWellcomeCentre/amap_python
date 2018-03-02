@@ -1,7 +1,7 @@
 import os
 import sys
 
-from amap.brain.brain_io import BrainIo
+from amap.brain import brain_io as bio
 from amap.registration.registration_params import RegistrationParams
 from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
@@ -50,7 +50,7 @@ class BrainRegistration(object):
             if not img_path.endswith('.nii'):
                 if img_path.endswith(('.tiff', '.tif')):
                     nii_path = '{}{}'.format(os.path.splitext(img_path)[0], '.nii')
-                    BrainIo.tiff_to_nii(img_path, nii_path)
+                    bio.tiff_to_nii(img_path, nii_path)
                     setattr(self, img_path_var_name, nii_path)
                 else:
                     sys.exit('Cannot perform registration, image {} not in supported format'.format(img_path))
