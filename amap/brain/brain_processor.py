@@ -17,9 +17,9 @@ class BrainProcessor(object):
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
         self.output_folder = output_folder
 
-    def get_atlas_pix_sizes(self):
-        from amap.config.config import config
-        atlas = BrainIo.load_nii(config['atlas']['path'])
+    def filter(self):
+        br = BrainProcessor.filter_for_registration(self.target_brain)
+        self.target_brain = np.flip(np.transpose(br, (1, 2, 0)), 2)  # OPTIMISE: see if way to specify in the nii transform instead
         pixel_sizes = atlas.header.get_zooms()
         if pixel_sizes != (0, 0, 0):
             return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
