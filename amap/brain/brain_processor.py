@@ -10,11 +10,11 @@ class BrainProcessor(object):
         self.target_brain_path = target_brain_path
 
         atlas_pixel_sizes = self.get_atlas_pix_sizes()
-        x_scaling = atlas_pixel_sizes['x'] / x_pix_mm  # TODO: compute from atlas brain (FIXME: round to some level)
-        y_scaling = atlas_pixel_sizes['y'] / y_pix_mm
-        z_scaling = atlas_pixel_sizes['z'] / z_pix_mm
         target_brain = BrainIo.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling)
         self.target_brain = self.filter_for_registration(target_brain)
+        x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # TODO: compute from atlas brain (FIXME: round to some level)
+        y_scaling = y_pix_mm / atlas_pixel_sizes['y']
+        z_scaling = z_pix_mm / atlas_pixel_sizes['z']
         self.output_folder = output_folder
 
     def get_atlas_pix_sizes(self):
