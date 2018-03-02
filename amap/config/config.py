@@ -16,13 +16,14 @@ conf_file_name = 'amap.conf'
 config_dirs = [
     os.path.join(user_config_dir, conf_file_name),
     global_config_directory,
-    'config',  # WARNING: relies on working directory
-    '../config',  # For sphinx doc  # TODO: add check that run by sphinx
+    '../amap/config',
+    'amap/config',  # WARNING: relies on working directory and uses hard coded sep
+    'config',  # For sphinx doc  # TODO: add check that run by sphinx
 ]
+config_paths = [os.path.abspath(os.path.join(d, conf_file_name)) for d in config_dirs]
 
 config_path = None
-for d in config_dirs:
-    p = os.path.join(d, conf_file_name)
+for p in config_paths:
     if not os.path.exists(p):
         continue
     else:
@@ -30,9 +31,13 @@ for d in config_dirs:
         break
 
 if not config_path:
-    raise AmapConfigError('Missing config file. Searched {}'.format(config_dirs))
-config = ConfigObj(config_path, encoding="UTF8", indent_type='    ', unrepr=True)
-config.reload()
+    raise AmapConfigError('Missing config file.\n'
+                          ' Tried {}.\n'
+                          ' Working directory: {}'.
+                          format(config_paths,
+                                 os.getcwd()))
+config_obj = ConfigObj(config_path, encoding="UTF8", indent_type='    ', unrepr=True)
+config_obj.reload()
 
 __os_folder_names = {
     'Linux': 'linux_x64',
