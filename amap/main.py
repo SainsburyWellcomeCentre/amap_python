@@ -11,7 +11,7 @@ from amap.registration.brain_registration import BrainRegistration
 
 def process(_args):
     sample_name = _args.sample_name
-    brain = BrainProcessor(args.target_brain_path, args.output_folder, _args.x_pix_mm, _args.y_pix_mm, _args.z_pix_mm)
+    brain = BrainProcessor(args.target_brain_path, args.output_folder, _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
     filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
     brain.save(filtered_brain_path)
     brain_reg = BrainRegistration(sample_name, filtered_brain_path, args.output_folder)  # TODO: check
@@ -24,11 +24,11 @@ def process(_args):
 def get_parser():
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     # FIXME: add options for all replacing default params and load params from config
-    parser.add_argument('target-brain-path', metavar='target_brain_path', type=str,
+    parser.add_argument('target_brain_path', metavar='target-brain-path', type=str,
                         help='The path to the brain to analyse')
-    parser.add_argument('sample-name', metavar='sample_name', type=str,
+    parser.add_argument('sample_name', metavar='sample-name', type=str,
                         help='The name of the sample to be used for new files')
-    parser.add_argument('output-folder', metavar='output_folder', type=str,
+    parser.add_argument('output_folder', metavar='output-folder', type=str,
                         help='The folder in which to save all the temporary '
                              'and final output of the registration process')
     parser.add_argument('-x', '--x-pixel-mm', dest='x_pixel_mm', type=float, default=0.001,
