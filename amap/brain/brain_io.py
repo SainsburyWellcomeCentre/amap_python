@@ -85,8 +85,8 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
         img = tifffile.imread(p)
         if i == 0:
             check_mem(img.nbytes * x_scaling_factor * y_scaling_factor, len(paths_sequence))
-            volume = np.empty((int(img.shape[0] * x_scaling_factor),
-                               int(img.shape[1] * y_scaling_factor),
+            volume = np.empty((round(img.shape[0] * x_scaling_factor),
+                               round(img.shape[1] * y_scaling_factor),  # TODO: add test case for shape rounding
                                len(paths_sequence)),
                               dtype=img.dtype)
         if x_scaling_factor != 1 and y_scaling_factor != 1:
