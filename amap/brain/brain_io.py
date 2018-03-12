@@ -84,7 +84,7 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
     for i, p in enumerate(tqdm(paths_sequence, desc='Loading images', unit='plane')):
         img = tifffile.imread(p)
         if i == 0:
-            check_mem(img.nbytes, len(paths_sequence))
+            check_mem(img.nbytes * x_scaling_factor * y_scaling_factor, len(paths_sequence))
             volume = np.empty((int(img.shape[0] * x_scaling_factor),
                                int(img.shape[1] * y_scaling_factor),
                                len(paths_sequence)),
