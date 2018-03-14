@@ -47,7 +47,7 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
     elif src_path.endswith('.tif'):
         img = load_img_stack(src_path)
     elif src_path.endswith(('.nii', '.nii.gz')):
-        img = load_nii(src_path)
+        img = load_nii(src_path, as_array=True)
     else:
         raise NotImplementedError('Could not guess loading method for path {}'.format(src_path))
     if z_scaling_factor != 1:
@@ -65,8 +65,12 @@ def load_img_stack(stack_path):
     return stack
 
 
-def load_nii(src_path):  # FIXME: add option as_np_array=True (that returns .get_data())
-    return nib.load(src_path)
+def load_nii(src_path, as_array=False):
+    nii_img = nib.load(src_path)
+    if as_array:
+        return nii_img.get_data()
+    else:
+        return nii_img
 
 
 def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter=''):
@@ -120,8 +124,7 @@ def tiff_to_nii(src_path, dest_path):
 
 
 def nii_to_tiff(src_path, dest_path):
-    nii_img = load_nii(src_path)
-    img = nii_img.get_data()
+    img = load_nii(src_path, as_array=True)
     tifffile.imsave(dest_path, img)
 
 
