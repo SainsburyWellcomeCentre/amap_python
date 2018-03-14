@@ -25,7 +25,7 @@ def scale_z(volume, scaling_factor, verbose=False):
     if verbose:
         print('Scaling z dimension')
     volume = np.swapaxes(volume, 1, 2)
-    volume = transform.rescale(volume, (1, scaling_factor))
+    volume = transform.rescale(volume, (1, scaling_factor), preserve_range=True)
     return np.swapaxes(volume, 1, 2)
 
 
