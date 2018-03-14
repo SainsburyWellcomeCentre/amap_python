@@ -55,7 +55,7 @@ class BrainProcessor(object):
         atlas_pix_sizes = self.get_atlas_pix_sizes()
         bio.to_nii(self.target_brain, dest_path,
                    scale=(atlas_pix_sizes['x'], atlas_pix_sizes['y'], atlas_pix_sizes['z']),
-                   affine_transform=np.eye(4)*0.01)
+                   affine_transform=np.eye(4)*0.01)  # FIXME: do not hardcode scale here
 
 
 def filter_plane_for_registration(img_plane):

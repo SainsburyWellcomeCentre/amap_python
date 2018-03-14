@@ -15,6 +15,10 @@ def process(_args):
         print("Preprocessing")
         brain = BrainProcessor(args.target_brain_path, args.output_folder,
                                _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
+        if args.save_unfiltered:
+            downsampled_brain_path = os.path.join(args.output_folder, '{}_{}.nii'
+                                                  .format(sample_name, 'downsampled'))
+            brain.save(downsampled_brain_path)
         brain.filter()
         filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
         brain.save(filtered_brain_path)
@@ -53,6 +57,9 @@ def get_parser():
                         help='Pixel size of the data in the third dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
+    parser.add_argument('--save-unfiltered', dest='save_unfiltered', action='store_true',
+                        help='Save the brain before filtering (only downsampled). This is useful for'
+                             'visualising the results.')
     parser.add_argument('-p', '--preprocess', action='store_true',
                         help='Whether the target brain needs to be preprocessed (downsampled/filtered) or not')
     parser.add_argument('-s', '--preprocessed-suffix', dest='preprocessed_suffix', type=str,
