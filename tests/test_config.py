@@ -28,7 +28,8 @@ def expected_conf():
         },
         'segmentation': {'program_path': ''},
         'atlas': {
-            'default_path': '',
+            'default_path': ('.', 'data', 'atlas', 'atlas.nii'),
+            'default_brain_path': ('.', 'data', 'atlas', 'atlas_brain.nii'),
             'path': '',
             'brain_path': '',
             'pixel_size': {

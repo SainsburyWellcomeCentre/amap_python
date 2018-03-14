@@ -9,7 +9,7 @@ from amap.brain import brain_processor as bp
 def test_normalise_to_16_bits():
     a = np.array([0, 2, 4, 240])
     b = bp.scale_to_16_bits(a)
-    assert b.max() == 2**16
+    assert b.max() == (2**16 - 1)
     assert b.min() == 0
     assert b.shape == a.shape
     assert b[1] == pytest.approx(546.13, 0.1)

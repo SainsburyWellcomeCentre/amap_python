@@ -57,11 +57,12 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
 
 def load_img_stack(stack_path):
     stack = tifffile.imread(stack_path)   # FIXME: inverted dimensions
-    shape = stack.shape
-    out_stack = np.empty((shape[1], shape[2], shape[0]))
-    for i in range(shape[0]):  # FIXME: use reshape or swapaxis
-        out_stack[:, :, i] = stack[i, :, :]
-    return out_stack
+    # shape = stack.shape
+    # out_stack = np.empty((shape[1], shape[2], shape[0]))
+    # for i in range(shape[0]):  # FIXME: use reshape or swapaxis
+    #     out_stack[:, :, i] = stack[i, :, :]
+    # return out_stack
+    return stack
 
 
 def load_nii(src_path):  # FIXME: add option as_np_array=True (that returns .get_data())
