@@ -45,7 +45,7 @@ class BrainProcessor(object):
         :return:
         """
         brain = brain.astype(np.float64, copy=False)
-        for i in trange(brain.shape[-1], desc='filtering'):
+        for i in trange(brain.shape[-1], desc='filtering', unit='plane'):
             brain[..., i] = filter_plane_for_registration(brain[..., i])  # OPTIMISE: see if in place better
         brain = scale_to_16_bits(brain)
         brain = brain.astype(np.uint16, copy=False)
