@@ -12,7 +12,7 @@ class BrainProcessor(object):
         self.target_brain_path = target_brain_path
 
         atlas_pixel_sizes = self.get_atlas_pix_sizes()
-        x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # TODO: compute from atlas brain (FIXME: round to some level)
+        x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # FIXME: round to um
         y_scaling = y_pix_mm / atlas_pixel_sizes['y']
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling)
@@ -64,7 +64,7 @@ def filter_plane_for_registration(img_plane):
     return img_plane
 
 
-def pseudo_flatfield(img_plane, sigma=5, size=15):  # FIXME: not using param
+def pseudo_flatfield(img_plane, sigma=5):
     # TODO: check gausian filter mode (one of {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’})
     img_plane = img_plane.copy()  # FIXME: check if necessary
     filtered_img = gaussian_filter(img_plane, sigma)

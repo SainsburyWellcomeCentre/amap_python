@@ -34,7 +34,6 @@ def process(_args):
 
 def get_parser():
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    # FIXME: add options for all replacing default params and load params from config
     parser.add_argument('target_brain_path', metavar='target-brain-path', type=str,
                         help='The path to the brain to analyse')
     parser.add_argument('sample_name', metavar='sample-name', type=str,

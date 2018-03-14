@@ -56,10 +56,10 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
 
 
 def load_img_stack(stack_path):
-    stack = tifffile.imread(stack_path)   # FIXME: inverted dimensions
+    stack = tifffile.imread(stack_path)
     # shape = stack.shape
     # out_stack = np.empty((shape[1], shape[2], shape[0]))
-    # for i in range(shape[0]):  # FIXME: use reshape or swapaxis
+    # for i in range(shape[0]):  # should use swapaxes
     #     out_stack[:, :, i] = stack[i, :, :]
     # return out_stack
     return stack
@@ -87,11 +87,10 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
         if i == 0:
             check_mem(img.nbytes * x_scaling_factor * y_scaling_factor, len(paths_sequence))
             volume = np.empty((int(round(img.shape[0] * x_scaling_factor)),
-                               int(round(img.shape[1] * y_scaling_factor)),  # TODO: add test case for shape rounding
+                               int(round(img.shape[1] * y_scaling_factor)),  # TEST: add test case for shape rounding
                                len(paths_sequence)),
                               dtype=img.dtype)
         if x_scaling_factor != 1 and y_scaling_factor != 1:
-            # FIXME: see if needs filter with missing anti_aliasing
             img = transform.rescale(img,
                                     (x_scaling_factor, y_scaling_factor), mode='constant',
                                     preserve_range=True)
@@ -100,12 +99,12 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
 
 
 # ######################## OUTPUT METHODS ########################
-def to_nii(img, dest_path, scale=(1, 1, 1), affine_transform=None):  # FIXME: add scale in metadata
+def to_nii(img, dest_path, scale=(1, 1, 1), affine_transform=None):  # TODO: see if we want also real units scale
     if affine_transform is None:
         affine_transform = np.eye(4)
     if not isinstance(img, nib.Nifti1Image):
         img = nib.Nifti1Image(img, affine_transform)
-    if scale != (1, 1, 1):
+    if scale != (1, 1, 1):  # FIXME: do only if img.get_zomms() is (1, 1, 1) and scale is not
         img.header.set_zooms(scale)
     nib.save(img, dest_path)
 
