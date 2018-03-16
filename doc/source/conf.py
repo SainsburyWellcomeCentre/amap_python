@@ -18,7 +18,23 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../'))
+
+project_source_folder = os.path.abspath('../../')
+sys.path.insert(0, project_source_folder)
+
+
+def generate_readme():
+    readme_content = ''
+    for file_name in ('introduction', 'prerequisites', 'installation', 'usage'):
+        file_path = os.path.join('.', '{}.rst'.format(file_name))
+        with open(file_path, 'r') as in_file:
+            content = in_file.read()
+        readme_content += content + '\n\n'
+    readme_path = os.path.join(project_source_folder, 'README.rst')
+    with open(readme_path, 'w') as out_file:
+        out_file.write(readme_content)
+
+generate_readme()
 
 
 # -- General configuration ------------------------------------------------
