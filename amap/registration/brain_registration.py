@@ -1,7 +1,10 @@
 import os
 import sys
 
+from skimage import segmentation as sk_segmentation
+
 from amap.brain import brain_io as bio
+
 from amap.registration.registration_params import RegistrationParams
 from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
@@ -38,6 +41,9 @@ class BrainRegistration(object):
 
         self.segmentation_log_file = log_file_template.format('segment')
         self.segmentation_error_file = error_file_template.format('segment')
+
+        self.outlines_file_path = os.path.join(output_folder,
+                                               '{}_outlines.nii'.format(sample_name))
 
         # self.sanitise_inputs()
 
@@ -109,3 +115,10 @@ class BrainRegistration(object):
 
     def get_reg_params(self):
         return RegistrationParams()
+
+    def generate_outlines(self):
+        morphed_atlas = bio.load_nii(self.registered_atlas_img_path, as_array=True)
+        boundaries_mask = sk_segmentation.find_boundaries(morphed_atlas, mode='inner')
+        boundaries = morphed_atlas * boundaries_mask
+        bio.to_nii(boundaries, self.outlines_file_path, scale=(0.01, 0.01, 0.01))  # FIXME: should remove hard coding
+

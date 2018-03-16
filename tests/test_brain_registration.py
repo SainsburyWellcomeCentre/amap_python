@@ -47,5 +47,10 @@ def test_segment(brain_reg_fixture):
     assert brain_reg_fixture._prepare_segmentation_cmd() == expected_output
 
 
+def spike_generate_outlines():
+    import numpy as np
+    a = np.arange(10)
+    b = np.array((True, False, False, False, True) * 2, dtype=np.bool)
+    assert (a*b == np.array([0, 0, 0, 0, 4, 5, 0, 0, 0, 9])).all()
 # assert error log is empty
 
