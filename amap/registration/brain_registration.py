@@ -2,12 +2,15 @@ import os
 import sys
 
 from amap.brain import brain_io as bio
+
 from amap.registration.registration_params import RegistrationParams
 from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
 
 class BrainRegistration(object):
     def __init__(self, sample_name, target_brain_path, output_folder):
+        self.sample_name = sample_name
+        self.output_folder = output_folder
         self.reg_params = self.get_reg_params()
 
         self.dataset_img_path = target_brain_path
@@ -15,31 +18,29 @@ class BrainRegistration(object):
         self.atlas_img_path = self.reg_params.atlas_path
 
         # TODO: put these suffixes in config
-        self.affine_registered_img_path = os.path.join(output_folder,
-                                                       '{}_affine_registered_atlas_brain.nii'.format(sample_name))
-        self.freeform_registered_img_path = os.path.join(output_folder,
-                                                         '{}_freeform_registered_atlas_brain.nii'.format(sample_name))
-        self.registered_atlas_img_path = os.path.join(output_folder,
-                                                      '{}_registered_atlas.nii'.format(sample_name))
+        self.affine_registered_img_path = self.make_path('{}_affine_registered_atlas_brain.nii')
+        self.freeform_registered_img_path = self.make_path('{}_freeform_registered_atlas_brain.nii')
+        self.registered_atlas_img_path = self.make_path('{}_registered_atlas.nii')
 
-        self.affine_matrix_path = os.path.join(output_folder,
-                                               '{}_affine_matrix.txt'.format(sample_name))
-        self.control_point_file_path = os.path.join(output_folder,
-                                                    '{}_control_point_file.nii'.format(sample_name))
+        self.affine_matrix_path = self.make_path('{}_affine_matrix.txt')
+        self.control_point_file_path = self.make_path('{}_control_point_file.nii')
 
-        log_file_template = os.path.join(output_folder, sample_name + '_{}.log')
-        error_file_template = os.path.join(output_folder, sample_name + '_{}.err')
+        self.affine_log_file_path, self.affine_error_path = self.compute_log_file_paths('affine')
+        self.freeform_log_file_path, self.freeform_error_file_path = self.compute_log_file_paths('freeform')
+        self.segmentation_log_file, self.segmentation_error_file = self.compute_log_file_paths('segment')
 
-        self.affine_log_file_path = log_file_template.format('affine')  # TODO: erase if all is well ?
-        self.affine_error_path = error_file_template.format('affine')
-
-        self.freeform_log_file_path = log_file_template.format('freeform')
-        self.freeform_error_file_path = error_file_template.format('freeform')
-
-        self.segmentation_log_file = log_file_template.format('segment')
-        self.segmentation_error_file = error_file_template.format('segment')
 
         # self.sanitise_inputs()
+
+    def compute_log_file_paths(self, basename):
+        log_file_template = os.path.join(self.output_folder, self.sample_name + '_{}.log')
+        error_file_template = os.path.join(self.output_folder, self.sample_name + '_{}.err')
+        log_file_path = log_file_template.format(basename)
+        error_file_path = error_file_template.format(basename)
+        return log_file_path, error_file_path
+
+    def make_path(self, basename):
+        return os.path.join(self.output_folder, basename.format(self.sample_name))
 
     def sanitise_inputs(self):
         img_paths_var_names = ('dataset_img_path', 'atlas_img_path', 'brain_of_atlas_img_path')
