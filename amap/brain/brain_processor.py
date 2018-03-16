@@ -7,11 +7,31 @@ from tqdm import trange
 from amap.brain import brain_io as bio
 
 
+def get_atlas_pix_sizes():
+    atlas, config_obj = load_atlas()
+    pixel_sizes = atlas.header.get_zooms()
+    if pixel_sizes != (0, 0, 0):
+        return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
+    else:
+        return config_obj['atlas']['pixel_size']
+
+
+def load_atlas():
+    from amap.config.config import config_obj
+    config_atlas_path = config_obj['atlas']['path']
+    if config_atlas_path:
+        atlas_path = config_atlas_path
+    else:
+        atlas_path = os.path.join(*config_obj['atlas']['default_path'])
+    atlas = bio.load_nii(atlas_path)
+    return atlas, config_obj
+
+
 class BrainProcessor(object):
     def __init__(self, target_brain_path, output_folder, x_pix_mm, y_pix_mm, z_pix_mm):
         self.target_brain_path = target_brain_path
 
-        atlas_pixel_sizes = self.get_atlas_pix_sizes()
+        atlas_pixel_sizes = get_atlas_pix_sizes()
         x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # FIXME: round to um
         y_scaling = y_pix_mm / atlas_pixel_sizes['y']
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
@@ -21,21 +41,6 @@ class BrainProcessor(object):
     def filter(self):
         br = BrainProcessor.filter_for_registration(self.target_brain)
         self.target_brain = np.flip(np.transpose(br, (1, 2, 0)), 2)  # OPTIMISE: see if way to specify in the nii transform instead
-
-    @staticmethod
-    def get_atlas_pix_sizes():
-        from amap.config.config import config_obj
-        config_atlas_path = config_obj['atlas']['path']
-        if config_atlas_path:
-            atlas_path = config_atlas_path
-        else:
-            atlas_path = os.path.join(*config_obj['atlas']['default_path'])
-        atlas = bio.load_nii(atlas_path)
-        pixel_sizes = atlas.header.get_zooms()
-        if pixel_sizes != (0, 0, 0):
-            return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
-        else:
-            return config_obj['atlas']['pixel_size']
 
     @staticmethod
     def filter_for_registration(brain):
@@ -52,7 +57,7 @@ class BrainProcessor(object):
         return brain
 
     def save(self, dest_path):
-        atlas_pix_sizes = self.get_atlas_pix_sizes()
+        atlas_pix_sizes = get_atlas_pix_sizes()
         bio.to_nii(self.target_brain, dest_path,
                    scale=(atlas_pix_sizes['x'], atlas_pix_sizes['y'], atlas_pix_sizes['z']),
                    affine_transform=np.eye(4)*0.01)  # FIXME: do not hardcode scale here
