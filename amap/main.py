@@ -58,18 +58,18 @@ def delete_intermediate_files(_args):
         os.remove(intermediate_file_path)
 
 
-def delete_logs(log_names):
+def delete_logs(_args, log_names):
     for log_name in log_names:
         log_path = os.path.join(_args.output_folder, '{}_{}'.format(_args.sample_name, log_name))
         os.remove(log_path)
 
 
-def delete_error_logs():
-    delete_logs(('affine.err', 'freeform.err', 'segment.err'))
+def delete_error_logs(_args):
+    delete_logs(_args, ('affine.err', 'freeform.err', 'segment.err'))
 
 
-def delete_regular_logs():
-    delete_logs(('affine.err', 'freeform.err', 'segment.err'))
+def delete_regular_logs(_args):
+    delete_logs(_args, ('affine.err', 'freeform.err', 'segment.err'))
 
 
 def process(_args):
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     print("Segmentation finished. Result can be found here: {}".format(process(args)))
     if args.erase_intermediate_files:
-        delete_error_logs()
+        delete_error_logs(args)
         delete_intermediate_files(args)
     if args.delete_logs:
-        delete_regular_logs()
+        delete_regular_logs(args)
