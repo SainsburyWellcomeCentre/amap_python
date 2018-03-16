@@ -21,6 +21,24 @@ Wrongly set units will cause the segmentation to fail.
 The amap_python CLI should perform this scaling and orientation for you correctly provided you specify the scale
 of the brain in mm.
 
+Running the program
+-------------------
+
+The program currently only provides a command line interface. The defaults for the CLI and the paths to the programs and
+atlas if these do not use the location recommended in the installation instructions can be modified in a text based
+configuration file that you will find under amap;config;amap.conf
+
+To run the program, use:
+
+.. automodule:: amap.main
+
+
+.. argparse::
+    :module: amap.main
+    :func: get_parser
+    :prog: amap_cli
+
+
 Working with the result
 -----------------------
 Output files

@@ -1,12 +1,7 @@
 import os
 import sys
-cwd = os.path.abspath('.')
-sys.path.insert(0, cwd)
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-
-from amap.brain.brain_processor import BrainProcessor
-from amap.registration.brain_registration import BrainRegistration
 
 
 def get_parser():
@@ -48,7 +43,7 @@ def get_parser():
                         help='The suffix to append to the name of the image after preprocessing '
                              '(downsampling and filtering)')
 
-    return parser.parse_args()
+    return parser
 
 
 def delete_intermediate_files(_args):
@@ -106,7 +101,13 @@ def process(_args):
 
 
 if __name__ == '__main__':
-    args = get_parser()
+    cwd = os.path.abspath('.')
+    sys.path.insert(0, cwd)
+
+    from amap.brain.brain_processor import BrainProcessor
+    from amap.registration.brain_registration import BrainRegistration
+
+    args = get_parser().parse_args()
 
     print("Segmentation finished. Result can be found here: {}".format(process(args)))
     if args.erase_intermediate_files:

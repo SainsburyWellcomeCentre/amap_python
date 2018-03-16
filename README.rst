@@ -92,6 +92,24 @@ Wrongly set units will cause the segmentation to fail.
 The amap_python CLI should perform this scaling and orientation for you correctly provided you specify the scale
 of the brain in mm.
 
+Running the program
+-------------------
+
+The program currently only provides a command line interface. The defaults for the CLI and the paths to the programs and
+atlas if these do not use the location recommended in the installation instructions can be modified in a text based
+configuration file that you will find under amap;config;amap.conf
+
+To run the program, use:
+
+.. automodule:: amap.main
+
+
+.. argparse::
+    :module: amap.main
+    :func: get_parser
+    :prog: amap_cli
+
+
 Working with the result
 -----------------------
 Output files
@@ -103,7 +121,7 @@ aMAP will produce the following output files (sample_name is used as a placehold
     The average brain registered onto your sample (-res in niftyReg)
 :sample_name_registered_atlas.nii:
     The atlas registered onto your sample (i.e. the segmentation of your sample.)
-:sample_name_segmentation.nii:
+:sample_name_outlines.nii:
     The borders of each structure registered onto your sample.
 :sample_name_affine_matrix.txt:
     The transformation matrix describing the affine registration of the average brain to your sample (-aff in niftyReg)
@@ -116,7 +134,7 @@ Quality Control
 ***************
 
 It is advisable to check all automated segmentations to ensure that the image registration worked correctly.
-A convenient way is to overlay the structure borders of the segmentations (e.g. sample_name_segmentation.nii)
+A convenient way is to overlay the structure borders of the segmentations (e.g. sample_name_outlines.nii)
 with the downscaled dataset that should be segmented (-ref in niftyReg).
 Similarly, the registered average brain can be overlaid as well.
 
