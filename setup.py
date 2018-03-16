@@ -4,7 +4,7 @@ requirements = [
     'psutil',
     'numpy',
     'scipy',
-    'skimage',
+    'scikit-image',
     'tifffile',
     'nibabel',
     'tqdm',
