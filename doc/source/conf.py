@@ -34,6 +34,7 @@ def generate_readme():
     with open(readme_path, 'w') as out_file:
         out_file.write(readme_content)
 
+
 generate_readme()
 
 
@@ -54,6 +55,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode'
 ]
+
+extensions.append('sphinxarg.ext')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
