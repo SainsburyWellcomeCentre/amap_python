@@ -48,7 +48,7 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
         img = load_from_folder(src_path, x_scaling_factor, y_scaling_factor,
                                name_filter='.tif', load_parallel=load_parallel)
     elif src_path.endswith('.txt'):
-        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor, loading_function=load_parallel)
+        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor, load_parallel)
     elif src_path.endswith('.tif'):
         img = load_img_stack(src_path)
     elif src_path.endswith(('.nii', '.nii.gz')):
