@@ -3,6 +3,8 @@ import sys
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+import numpy as np
+
 
 def get_parser():
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
@@ -42,6 +44,10 @@ def get_parser():
                         default='downsampled_filtered',
                         help='The suffix to append to the name of the image after preprocessing '
                              '(downsampling and filtering)')
+    parser.add_argument('-o', '--orientation', type=str, choices=('coronal', 'sagittal', 'horizontal'),
+                        default='coronal',
+                        help='The orientation of the sample brain. This is used to transpose the brain'
+                             'into the same orientation as the atlas.')
     parser.add_argument('--flip-x', dest='flip_x', action='store_true',
                         help='Whether to flip the sample brain along the first dimension.')  # Warning: atlas reference
     parser.add_argument('--flip-y', dest='flip_y', action='store_true',
@@ -81,11 +87,13 @@ def process(_args):
     if _args.preprocess:
         print("Preprocessing")
         brain = BrainProcessor(args.target_brain_path, args.output_folder,
-                               _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
+                               _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm,
+                               original_orientation=_args.orientation)
         brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
         if args.save_unfiltered:
             downsampled_brain_path = os.path.join(args.output_folder, '{}_{}.nii'
                                                   .format(sample_name, 'downsampled'))
+            brain.target_brain = brain.target_brain.astype(np.uint16, copy=False)  # FIXME: avaoid hardcoding unless io
             brain.save(downsampled_brain_path)
         brain.filter()
         filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
