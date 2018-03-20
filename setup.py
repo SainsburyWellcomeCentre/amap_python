@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 requirements = [
     'psutil',
-    'numpy',
+    'numpy>=1.12',
     'scipy',
     'scikit-image',
     'tifffile',
