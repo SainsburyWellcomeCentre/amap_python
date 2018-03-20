@@ -29,17 +29,18 @@ def load_atlas():
 
 class BrainProcessor(object):
     def __init__(self, target_brain_path, output_folder, x_pix_mm, y_pix_mm, z_pix_mm,
-                 original_orientation='coronal'):
+                 original_orientation='coronal', load_parallel=False):
         self.target_brain_path = target_brain_path
 
         atlas_pixel_sizes = get_atlas_pix_sizes()
         x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # FIXME: round to um
         y_scaling = y_pix_mm / atlas_pixel_sizes['y']
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
-        self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling)
 
         self.original_orientation = original_orientation
 
+        self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling,
+                                         load_parallel=load_parallel)
         self.swap_orientation_from_original_to_atlas()
         self.output_folder = output_folder
 

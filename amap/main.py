@@ -54,6 +54,9 @@ def get_parser():
                         help='Whether to flip the sample brain along the second dimension.')
     parser.add_argument('--flip-z', dest='flip_z', action='store_true',
                         help='Whether to flip the sample brain along the third dimension.')
+    parser.add_argument('--load-parallel', 'load_parallel', action='store_true',
+                        help='Whether to use multiprocessing to load the original image. Useful if stored'
+                             'as a sequence of tiff files.')
 
     return parser
 
@@ -88,7 +91,7 @@ def process(_args):
         print("Preprocessing")
         brain = BrainProcessor(args.target_brain_path, args.output_folder,
                                _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm,
-                               original_orientation=_args.orientation)
+                               original_orientation=_args.orientation, load_parallel=_args.load_parallel)
         brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
         if args.save_unfiltered:
             downsampled_brain_path = os.path.join(args.output_folder, '{}_{}.nii'
