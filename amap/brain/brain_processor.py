@@ -38,6 +38,17 @@ class BrainProcessor(object):
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling)
         self.output_folder = output_folder
 
+    def flip(self, axes):
+        """
+
+        :param tuple axes: a tuple of 3 booleans indicating which axes to flip or not
+        :return:
+        """
+        for axis_idx, flip_axis in enumerate(axes):
+            if flip_axis:
+                # print("Flipping axis {}".format('xyz'[axis_idx]))
+                self.target_brain = np.flip(self.target_brain, axis_idx)
+
     def filter(self):
         br = BrainProcessor.filter_for_registration(self.target_brain)
         self.target_brain = np.flip(np.transpose(br, (1, 2, 0)), 2)  # OPTIMISE: see if way to specify in the nii transform instead
