@@ -28,7 +28,8 @@ def load_atlas():
 
 
 class BrainProcessor(object):
-    def __init__(self, target_brain_path, output_folder, x_pix_mm, y_pix_mm, z_pix_mm):
+    def __init__(self, target_brain_path, output_folder, x_pix_mm, y_pix_mm, z_pix_mm,
+                 original_orientation='coronal'):
         self.target_brain_path = target_brain_path
 
         atlas_pixel_sizes = get_atlas_pix_sizes()
@@ -36,6 +37,10 @@ class BrainProcessor(object):
         y_scaling = y_pix_mm / atlas_pixel_sizes['y']
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling)
+
+        self.original_orientation = original_orientation
+
+        self.swap_orientation_from_original_to_atlas()
         self.output_folder = output_folder
 
     def flip(self, axes):
@@ -49,9 +54,32 @@ class BrainProcessor(object):
                 # print("Flipping axis {}".format('xyz'[axis_idx]))
                 self.target_brain = np.flip(self.target_brain, axis_idx)
 
+    def swap_orientation_from_original_to_atlas(self, atlas_orientation='horizontal', flip_z=False):
+        if atlas_orientation != 'horizontal':
+            raise NotImplementedError('Only supported atlas orientation is horizontal')
+        transpositions = {
+            'horizontal': (1, 0, 2),
+            'coronal': (1, 2, 0),
+            'sagittal': (2, 1, 0)
+        }
+        transposition = transpositions[self.original_orientation]
+        self.target_brain = np.transpose(self.target_brain, transposition)
+
+    def swap_orientation_from_atlas_to_original(self, atlas_orientation='horizontal', flip_z=False):
+        if atlas_orientation != 'horizontal':
+            raise NotImplementedError('Only supported atlas orientation is horizontal')
+        transpositions = {
+            'horizontal': (1, 0, 2),
+            'coronal': (2, 0, 1),
+            'sagittal': (2, 1, 0)
+        }
+        transposition = transpositions[self.original_orientation]
+        self.target_brain = np.transpose(self.target_brain, transposition)
+
     def filter(self):
-        br = BrainProcessor.filter_for_registration(self.target_brain)
-        self.target_brain = np.flip(np.transpose(br, (1, 2, 0)), 2)  # OPTIMISE: see if way to specify in the nii transform instead
+        self.swap_orientation_from_atlas_to_original()  # process along original z dimension
+        self.target_brain = BrainProcessor.filter_for_registration(self.target_brain)
+        self.swap_orientation_from_original_to_atlas()  # reset to atlas orientation
 
     @staticmethod
     def filter_for_registration(brain):
@@ -61,7 +89,7 @@ class BrainProcessor(object):
         :return:
         """
         brain = brain.astype(np.float64, copy=False)
-        for i in trange(brain.shape[-1], desc='filtering', unit='plane'):
+        for i in trange(brain.shape[-1], desc='filtering', unit='plane'):  # OPTIMISE: could multiprocess but not slow
             brain[..., i] = filter_plane_for_registration(brain[..., i])  # OPTIMISE: see if in place better
         brain = scale_to_16_bits(brain)
         brain = brain.astype(np.uint16, copy=False)
