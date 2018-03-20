@@ -54,7 +54,7 @@ def get_parser():
                         help='Whether to flip the sample brain along the second dimension.')
     parser.add_argument('--flip-z', dest='flip_z', action='store_true',
                         help='Whether to flip the sample brain along the third dimension.')
-    parser.add_argument('--load-parallel', 'load_parallel', action='store_true',
+    parser.add_argument('--load-parallel', dest='load_parallel', action='store_true',
                         help='Whether to use multiprocessing to load the original image. Useful if stored'
                              'as a sequence of tiff files.')
 
