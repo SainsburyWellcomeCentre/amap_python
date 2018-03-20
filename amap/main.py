@@ -42,6 +42,12 @@ def get_parser():
                         default='downsampled_filtered',
                         help='The suffix to append to the name of the image after preprocessing '
                              '(downsampling and filtering)')
+    parser.add_argument('--flip-x', dest='flip_x', action='store_true',
+                        help='Whether to flip the sample brain along the first dimension.')  # Warning: atlas reference
+    parser.add_argument('--flip-y', dest='flip_y', action='store_true',
+                        help='Whether to flip the sample brain along the second dimension.')
+    parser.add_argument('--flip-z', dest='flip_z', action='store_true',
+                        help='Whether to flip the sample brain along the third dimension.')
 
     return parser
 
@@ -76,6 +82,7 @@ def process(_args):
         print("Preprocessing")
         brain = BrainProcessor(args.target_brain_path, args.output_folder,
                                _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm)
+        brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
         if args.save_unfiltered:
             downsampled_brain_path = os.path.join(args.output_folder, '{}_{}.nii'
                                                   .format(sample_name, 'downsampled'))
