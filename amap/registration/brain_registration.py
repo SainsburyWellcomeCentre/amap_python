@@ -18,11 +18,13 @@ class BrainRegistration(object):
         self.dataset_img_path = target_brain_path
         self.brain_of_atlas_img_path = self.reg_params.atlas_brain_path
         self.atlas_img_path = self.reg_params.atlas_path
+        self.hemispheres_img_path = self.reg_params.hemispheres_path
 
         # TODO: put these suffixes in config
         self.affine_registered_img_path = self.make_path('{}_affine_registered_atlas_brain.nii')
         self.freeform_registered_img_path = self.make_path('{}_freeform_registered_atlas_brain.nii')
         self.registered_atlas_img_path = self.make_path('{}_registered_atlas.nii')
+        self.registered_hemispheres_img_path = self.make_path('{}_registered_hemispheres.nii')
 
         self.affine_matrix_path = self.make_path('{}_affine_matrix.txt')
         self.control_point_file_path = self.make_path('{}_control_point_file.nii')
@@ -107,6 +109,14 @@ class BrainRegistration(object):
     def segment(self):
         try:
             safe_execute_command(self._prepare_segmentation_cmd(self.atlas_img_path, self.registered_atlas_img_path),
+                                 self.segmentation_log_file, self.segmentation_error_file)
+        except SafeExecuteCommandError as err:
+            sys.exit('Segmentation failed; {}'.format(err))
+
+    def register_hemispheres(self):
+        try:
+            safe_execute_command(self._prepare_segmentation_cmd(self.hemispheres_img_path,
+                                                                self.registered_hemispheres_img_path),
                                  self.segmentation_log_file, self.segmentation_error_file)
         except SafeExecuteCommandError as err:
             sys.exit('Segmentation failed; {}'.format(err))

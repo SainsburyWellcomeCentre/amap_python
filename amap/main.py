@@ -30,6 +30,9 @@ def get_parser():
     parser.add_argument('--save-unfiltered', dest='save_unfiltered', action='store_true',
                         help='Save the brain before filtering (only downsampled). This is useful for'
                              'visualising the results.')
+    parser.add_argument('--left-right', dest='left_right', action='store_true',
+                        help='Whether to do register the hemispheres (left/right) atlas too to get informations'
+                             'about lateralisation.')
     parser.add_argument('--erase-intermediate-files', dest='erase_intermediate_files', action='store_true',
                         help='Whether the program should erase the intermediate image volumes used by niftyreg after'
                              'the program finished successfully. Use this only if you know what you are doing.')
@@ -111,6 +114,8 @@ def process(_args):
     brain_reg.register_freeform()
     print("\tStarting segmentation")
     brain_reg.segment()
+    if _args.left_right:
+        brain_reg.register_hemispheres()
     if args.generate_outlines:
         print("\tGenerating outlines")
         brain_reg.generate_outlines()
