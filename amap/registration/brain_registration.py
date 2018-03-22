@@ -94,19 +94,19 @@ class BrainRegistration(object):
         except SafeExecuteCommandError as err:
             sys.exit('Freeform registration failed; {}'.format(err))
 
-    def _prepare_segmentation_cmd(self):
+    def _prepare_segmentation_cmd(self, floating_image_path, dest_img_path):
         cmd = '{} {} -cpp {} -flo {} -ref {} -res {}'.format(
             self.reg_params.segmentation_program_path, self.reg_params.format_segmentation_params().strip(),
             self.control_point_file_path,
-            self.atlas_img_path,
+            floating_image_path,
             self.dataset_img_path,
-            self.registered_atlas_img_path
+            dest_img_path
         )
         return cmd
 
     def segment(self):
         try:
-            safe_execute_command(self._prepare_segmentation_cmd(),
+            safe_execute_command(self._prepare_segmentation_cmd(self.atlas_img_path, self.registered_atlas_img_path),
                                  self.segmentation_log_file, self.segmentation_error_file)
         except SafeExecuteCommandError as err:
             sys.exit('Segmentation failed; {}'.format(err))

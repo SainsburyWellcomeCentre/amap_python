@@ -28,8 +28,9 @@ def expected_conf():
         },
         'segmentation': {'program_path': ''},
         'atlas': {
-            'default_path': ('.', 'data', 'atlas', 'atlas.nii'),
-            'default_brain_path': ('.', 'data', 'atlas', 'atlas_brain.nii'),
+            'default_brain_path': ('.', 'data', 'atlas', 'allen_cff_october_2016_average_brain_filtered_10_um.nii'),
+            'default_path': ('.', 'data', 'atlas', 'allen_cff_october_2017_atlas_annotations_10_um.nii'),
+            'default_outlines_path': ('.', 'data', 'atlas', 'allen_cff_october_2017_atlas_outlines_10_um.nii'),
             'path': '',
             'brain_path': '',
             'pixel_size': {

@@ -44,7 +44,8 @@ def test_segment(brain_reg_fixture):
                       '-cpp /home/bob/output_brains/test_brain_control_point_file.nii ' \
                       '-flo /home/lambda/amap/atlas.nii -ref /home/bob/brains/test_brain_downsampled.nii ' \
                       '-res /home/bob/output_brains/test_brain_registered_atlas.nii'
-    assert brain_reg_fixture._prepare_segmentation_cmd() == expected_output
+    assert brain_reg_fixture._prepare_segmentation_cmd(brain_reg_fixture.atlas_img_path,
+                                                       brain_reg_fixture.registered_atlas_img_path) == expected_output
 
 
 def spike_generate_outlines():

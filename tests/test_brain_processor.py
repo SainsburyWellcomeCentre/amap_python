@@ -29,7 +29,10 @@ def test_filter_for_registration():
 
 def test_get_atlas_pix_sizes(monkeypatch):
     from amap.config.config import config_obj
-    monkeypatch.setitem(config_obj, 'atlas', {'path': os.path.join('..', 'data', 'atlas', 'atlas.nii')})
+    monkeypatch.setitem(config_obj, 'atlas', {'path': os.path.join('..',
+                                                                   'data',
+                                                                   'atlas',
+                                                                   'allen_cff_october_2017_atlas_annotations_10_um.nii')})
     for key, expected_key in zip(sorted(bp.get_atlas_pix_sizes().keys()), ('x', 'y', 'z')):
         assert key == expected_key
     assert (isinstance(v, float) for v in bp.get_atlas_pix_sizes().values())
