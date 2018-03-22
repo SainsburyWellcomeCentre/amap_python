@@ -18,10 +18,13 @@ def start_array(layer):
     return volume
 
 
-def test_tiff_io(layer):
-    folder = '/tmp/test_amap/'  # FIXME: use tempdir to autoremove
-    tifffile.imsave('{}_layer.tiff'.format(folder), layer)
-    reloaded = tifffile.imread('{}_layer.tiff'.format(folder))
+def test_tiff_io(tmpdir, layer):
+    folder = str(tmpdir)
+    dest_path = os.path.join(folder, 'layer.tiff')
+    tifffile.imsave(dest_path, layer)
+    reloaded = tifffile.imread(dest_path)
+    # print("Original image:\n {}".format(layer))
+    # print("Reloaded image:\n {}".format(reloaded))
     assert (reloaded == layer).all()
 
 
@@ -49,11 +52,16 @@ def test_to_nii(tmpdir, start_array):  # Also tests load_nii
 
 
 def test_nii_to_tiff(tmpdir, start_array):
-    tiff_path = os.path.join(str(tmpdir), 'test_array.tiff')
     nii_path = os.path.join(str(tmpdir), 'test_array.nii.gz')
+    tiff_path = os.path.join(str(tmpdir), 'test_array.tiff')
+
     bio.to_nii(start_array, nii_path)
     bio.nii_to_tiff(nii_path, tiff_path)
-    assert (bio.load_img_stack(tiff_path) == start_array).all()
+    test_array = bio.load_img_stack(tiff_path)
+
+    # print("Start array:\n {}".format(start_array))
+    # print("Test array:\n {}".format(test_array))
+    assert (test_array == start_array).all()
 
 
 def test_tiff_to_nii(tmpdir, start_array):

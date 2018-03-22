@@ -34,6 +34,7 @@ class RegistrationParamsMock(registration_params.RegistrationParams):
         self.default_atlas_path = '/home/lambda/amap/default_atlas.nii'
         self.atlas_path = '/home/lambda/amap/atlas.nii'
         self.atlas_brain_path = '/home/lambda/amap/atlas_brain.nii'
+        self.hemispheres_path = '/home/lambda/amap/hemispheres_path.ini'
         self.atlas_x_pix_size = 0.01  # WARNING: mm
         self.atlas_y_pix_size = 0.01  # WARNING: mm
         self.atlas_z_pix_size = 0.01  # WARNING: mm

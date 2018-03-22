@@ -1,5 +1,8 @@
 import os
+import math
 import psutil
+import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 from skimage import transform
@@ -30,7 +33,8 @@ def scale_z(volume, scaling_factor, verbose=False):
 
 
 # ######################## INPUT METHODS ####################
-def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_factor=1.0, verbose=False):
+def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_factor=1.0,
+             load_parallel=False, verbose=False):
     """
     .. warning:: x and y scaling not used at the moment if loading a complete image
 
@@ -41,13 +45,14 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
     :return:
     """
     if os.path.isdir(src_path):
-        img = load_from_folder(src_path, x_scaling_factor, y_scaling_factor, name_filter='.tif')
+        img = load_from_folder(src_path, x_scaling_factor, y_scaling_factor,
+                               name_filter='.tif', load_parallel=load_parallel)
     elif src_path.endswith('.txt'):
-        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor)
+        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor, load_parallel=load_parallel)
     elif src_path.endswith('.tif'):
         img = load_img_stack(src_path)
     elif src_path.endswith(('.nii', '.nii.gz')):
-        img = load_nii(src_path)
+        img = load_nii(src_path, as_array=True)
     else:
         raise NotImplementedError('Could not guess loading method for path {}'.format(src_path))
     if z_scaling_factor != 1:
@@ -56,28 +61,55 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
 
 
 def load_img_stack(stack_path):
-    stack = tifffile.imread(stack_path)   # FIXME: inverted dimensions
-    shape = stack.shape
-    out_stack = np.empty((shape[1], shape[2], shape[0]))
-    for i in range(shape[0]):  # FIXME: use reshape or swapaxis
-        out_stack[:, :, i] = stack[i, :, :]
-    return out_stack
+    stack = tifffile.imread(stack_path)
+    # shape = stack.shape
+    # out_stack = np.empty((shape[1], shape[2], shape[0]))
+    # for i in range(shape[0]):  # should use swapaxes
+    #     out_stack[:, :, i] = stack[i, :, :]
+    # return out_stack
+    return stack
 
 
-def load_nii(src_path):  # FIXME: add option as_np_array=True (that returns .get_data())
-    return nib.load(src_path)
+def load_nii(src_path, as_array=False):
+    nii_img = nib.load(src_path)
+    if as_array:
+        return nii_img.get_data()
+    else:
+        return nii_img
 
 
-def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter=''):
+def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter='', load_parallel=False):
     paths = [os.path.join(src_folder, fname) for fname in sorted(os.listdir(src_folder)) if name_filter in fname]
-    return load_from_paths_sequence(paths, x_scaling_factor, y_scaling_factor)
+    loading_function = threaded_load_from_sequence if load_parallel else load_from_paths_sequence
+    return loading_function(paths, x_scaling_factor, y_scaling_factor)
 
 
-def load_img_sequence(img_sequence_file, x_scaling_factor, y_scaling_factor):
+def load_img_sequence(img_sequence_file, x_scaling_factor, y_scaling_factor, load_parallel=False):
     with open(img_sequence_file, 'r') as in_file:
         paths = in_file.readlines()
         paths = [p.strip() for p in paths]
-    return load_from_paths_sequence(paths, x_scaling_factor, y_scaling_factor)
+    loading_function = threaded_load_from_sequence if load_parallel else load_from_paths_sequence
+    return loading_function(paths, x_scaling_factor, y_scaling_factor)
+
+
+def threaded_load_from_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_factor=1.0):
+    stacks = []
+    n_free_cpus_min = 1  # TODO: set as option
+    n_processes = mp.cpu_count() - n_free_cpus_min
+    pool = ProcessPoolExecutor(max_workers=n_processes)  # FIXME: will not work with interactive interpreter.
+    # FIXME: should detect and switch to other method
+
+    n_paths_per_subsequence = math.floor(len(paths_sequence) / n_processes)
+    for i in range(n_processes):
+        start_idx = i * n_paths_per_subsequence
+        end_idx = start_idx + n_paths_per_subsequence
+        end_idx = end_idx if end_idx < len(paths_sequence) else -1
+        sub_paths = paths_sequence[start_idx:end_idx]
+
+        process = pool.submit(load_from_paths_sequence, sub_paths, x_scaling_factor, y_scaling_factor)
+        stacks.append(process)
+    stack = np.dstack((s.result() for s in stacks))
+    return stack
 
 
 def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_factor=1.0):  # OPTIMISE: load threaded and process by batch
@@ -86,11 +118,10 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
         if i == 0:
             check_mem(img.nbytes * x_scaling_factor * y_scaling_factor, len(paths_sequence))
             volume = np.empty((int(round(img.shape[0] * x_scaling_factor)),
-                               int(round(img.shape[1] * y_scaling_factor)),  # TODO: add test case for shape rounding
+                               int(round(img.shape[1] * y_scaling_factor)),  # TEST: add test case for shape rounding
                                len(paths_sequence)),
                               dtype=img.dtype)
         if x_scaling_factor != 1 and y_scaling_factor != 1:
-            # FIXME: see if needs filter with missing anti_aliasing
             img = transform.rescale(img,
                                     (x_scaling_factor, y_scaling_factor), mode='constant',
                                     preserve_range=True)
@@ -99,12 +130,12 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
 
 
 # ######################## OUTPUT METHODS ########################
-def to_nii(img, dest_path, scale=(1, 1, 1), affine_transform=None):  # FIXME: add scale in metadata
+def to_nii(img, dest_path, scale=(1, 1, 1), affine_transform=None):  # TODO: see if we want also real units scale
     if affine_transform is None:
         affine_transform = np.eye(4)
     if not isinstance(img, nib.Nifti1Image):
         img = nib.Nifti1Image(img, affine_transform)
-    if scale != (1, 1, 1):
+    if scale != (1, 1, 1):  # FIXME: do only if img.get_zomms() is (1, 1, 1) and scale is not
         img.header.set_zooms(scale)
     nib.save(img, dest_path)
 
@@ -120,8 +151,7 @@ def tiff_to_nii(src_path, dest_path):
 
 
 def nii_to_tiff(src_path, dest_path):
-    nii_img = load_nii(src_path)
-    img = nii_img.get_data()
+    img = load_nii(src_path, as_array=True)
     tifffile.imsave(dest_path, img)
 
 

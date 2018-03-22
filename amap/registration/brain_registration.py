@@ -1,45 +1,51 @@
 import os
 import sys
 
+from skimage import segmentation as sk_segmentation
+
 from amap.brain import brain_io as bio
+
 from amap.registration.registration_params import RegistrationParams
 from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
 
 class BrainRegistration(object):
     def __init__(self, sample_name, target_brain_path, output_folder):
+        self.sample_name = sample_name
+        self.output_folder = output_folder
         self.reg_params = self.get_reg_params()
 
         self.dataset_img_path = target_brain_path
         self.brain_of_atlas_img_path = self.reg_params.atlas_brain_path
         self.atlas_img_path = self.reg_params.atlas_path
+        self.hemispheres_img_path = self.reg_params.hemispheres_path
 
         # TODO: put these suffixes in config
-        self.affine_registered_img_path = os.path.join(output_folder,
-                                                       '{}_affine_registered_atlas_brain.nii'.format(sample_name))
-        self.freeform_registered_img_path = os.path.join(output_folder,
-                                                         '{}_freeform_registered_atlas_brain.nii'.format(sample_name))
-        self.registered_atlas_img_path = os.path.join(output_folder,
-                                                      '{}_registered_atlas.nii'.format(sample_name))
+        self.affine_registered_img_path = self.make_path('{}_affine_registered_atlas_brain.nii')
+        self.freeform_registered_img_path = self.make_path('{}_freeform_registered_atlas_brain.nii')
+        self.registered_atlas_img_path = self.make_path('{}_registered_atlas.nii')
+        self.registered_hemispheres_img_path = self.make_path('{}_registered_hemispheres.nii')
 
-        self.affine_matrix_path = os.path.join(output_folder,
-                                               '{}_affine_matrix.txt'.format(sample_name))
-        self.control_point_file_path = os.path.join(output_folder,
-                                                    '{}_control_point_file.nii'.format(sample_name))
+        self.affine_matrix_path = self.make_path('{}_affine_matrix.txt')
+        self.control_point_file_path = self.make_path('{}_control_point_file.nii')
 
-        log_file_template = os.path.join(output_folder, sample_name + '_{}.log')
-        error_file_template = os.path.join(output_folder, sample_name + '_{}.err')
+        self.outlines_file_path = self.make_path('{}_outlines.nii')
 
-        self.affine_log_file_path = log_file_template.format('affine')  # TODO: erase if all is well ?
-        self.affine_error_path = error_file_template.format('affine')
-
-        self.freeform_log_file_path = log_file_template.format('freeform')
-        self.freeform_error_file_path = error_file_template.format('freeform')
-
-        self.segmentation_log_file = log_file_template.format('segment')
-        self.segmentation_error_file = error_file_template.format('segment')
+        self.affine_log_file_path, self.affine_error_path = self.compute_log_file_paths('affine')
+        self.freeform_log_file_path, self.freeform_error_file_path = self.compute_log_file_paths('freeform')
+        self.segmentation_log_file, self.segmentation_error_file = self.compute_log_file_paths('segment')
 
         # self.sanitise_inputs()
+
+    def compute_log_file_paths(self, basename):
+        log_file_template = os.path.join(self.output_folder, self.sample_name + '_{}.log')
+        error_file_template = os.path.join(self.output_folder, self.sample_name + '_{}.err')
+        log_file_path = log_file_template.format(basename)
+        error_file_path = error_file_template.format(basename)
+        return log_file_path, error_file_path
+
+    def make_path(self, basename):
+        return os.path.join(self.output_folder, basename.format(self.sample_name))
 
     def sanitise_inputs(self):
         img_paths_var_names = ('dataset_img_path', 'atlas_img_path', 'brain_of_atlas_img_path')
@@ -90,22 +96,36 @@ class BrainRegistration(object):
         except SafeExecuteCommandError as err:
             sys.exit('Freeform registration failed; {}'.format(err))
 
-    def _prepare_segmentation_cmd(self):
+    def _prepare_segmentation_cmd(self, floating_image_path, dest_img_path):
         cmd = '{} {} -cpp {} -flo {} -ref {} -res {}'.format(
             self.reg_params.segmentation_program_path, self.reg_params.format_segmentation_params().strip(),
             self.control_point_file_path,
-            self.atlas_img_path,
+            floating_image_path,
             self.dataset_img_path,
-            self.registered_atlas_img_path
+            dest_img_path
         )
         return cmd
 
     def segment(self):
         try:
-            safe_execute_command(self._prepare_segmentation_cmd(),
+            safe_execute_command(self._prepare_segmentation_cmd(self.atlas_img_path, self.registered_atlas_img_path),
+                                 self.segmentation_log_file, self.segmentation_error_file)
+        except SafeExecuteCommandError as err:
+            sys.exit('Segmentation failed; {}'.format(err))
+
+    def register_hemispheres(self):
+        try:
+            safe_execute_command(self._prepare_segmentation_cmd(self.hemispheres_img_path,
+                                                                self.registered_hemispheres_img_path),
                                  self.segmentation_log_file, self.segmentation_error_file)
         except SafeExecuteCommandError as err:
             sys.exit('Segmentation failed; {}'.format(err))
 
     def get_reg_params(self):
         return RegistrationParams()
+
+    def generate_outlines(self):
+        morphed_atlas = bio.load_nii(self.registered_atlas_img_path, as_array=True)
+        boundaries_mask = sk_segmentation.find_boundaries(morphed_atlas, mode='inner')
+        boundaries = morphed_atlas * boundaries_mask
+        bio.to_nii(boundaries, self.outlines_file_path, scale=(0.01, 0.01, 0.01))  # FIXME: should remove hard coding
