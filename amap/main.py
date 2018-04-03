@@ -58,7 +58,7 @@ def get_parser():
     parser.add_argument('--flip-z', dest='flip_z', action='store_true',
                         help='Whether to flip the sample brain along the third dimension.')
     parser.add_argument('--load-parallel', dest='load_parallel', action='store_true',
-                        help='Whether to use multiprocessing to load the original image. Useful if stored'
+                        help='Whether to use multiprocessing to load the original image. Useful if stored '
                              'as a sequence of tiff files.')
 
     return parser
@@ -92,22 +92,22 @@ def process(_args):
     sample_name = _args.sample_name
     if _args.preprocess:
         print("Preprocessing")
-        brain = BrainProcessor(args.target_brain_path, args.output_folder,
+        brain = BrainProcessor(_args.target_brain_path, _args.output_folder,
                                _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm,
                                original_orientation=_args.orientation, load_parallel=_args.load_parallel)
         brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
-        if args.save_unfiltered:
-            downsampled_brain_path = os.path.join(args.output_folder, '{}_{}.nii'
+        if _args.save_unfiltered:
+            downsampled_brain_path = os.path.join(_args.output_folder, '{}_{}.nii'
                                                   .format(sample_name, 'downsampled'))
             brain.target_brain = brain.target_brain.astype(np.uint16, copy=False)  # FIXME: avaoid hardcoding unless io
             brain.save(downsampled_brain_path)
         brain.filter()
-        filtered_brain_path = os.path.join(args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
+        filtered_brain_path = os.path.join(_args.output_folder, '{}_{}.nii'.format(sample_name, _args.preprocessed_suffix))
         brain.save(filtered_brain_path)
     else:
         filtered_brain_path = _args.target_brain_path
     print("Registering")
-    brain_reg = BrainRegistration(sample_name, filtered_brain_path, args.output_folder)  # TODO: check
+    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder)  # TODO: check
     print("\tStarting affine registration")
     brain_reg.register_affine()  # TODO: have it as option
     print("\tStarting freeform registration")
@@ -116,7 +116,7 @@ def process(_args):
     brain_reg.segment()
     if _args.left_right:
         brain_reg.register_hemispheres()
-    if args.generate_outlines:
+    if _args.generate_outlines:
         print("\tGenerating outlines")
         brain_reg.generate_outlines()
     print("Done")
@@ -131,8 +131,9 @@ if __name__ == '__main__':
     from amap.registration.brain_registration import BrainRegistration
 
     args = get_parser().parse_args()
+    results_path = process(args)
 
-    print("Segmentation finished. Result can be found here: {}".format(process(args)))
+    print("Segmentation finished. Result can be found here: {}".format(results_path))
     if args.erase_intermediate_files:
         delete_error_logs(args)
         delete_intermediate_files(args)
