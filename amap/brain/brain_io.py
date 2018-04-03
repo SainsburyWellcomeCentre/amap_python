@@ -42,6 +42,8 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
     :param x_scaling_factor:
     :param y_scaling_factor:
     :param z_scaling_factor:
+    :param bool load_parallel:
+    :param bool verbose:
     :return:
     """
     if os.path.isdir(src_path):
