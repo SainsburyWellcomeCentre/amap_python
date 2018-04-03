@@ -149,7 +149,7 @@ def tiff_to_nii(src_path, dest_path):
     img = load_any(src_path)
     if not isinstance(img, nib.Nifti1Image):
         img = nib.Nifti1Image(img, np.eye(4))
-    nib.save(img, os.path.join(dest_path))  # FIXME: why os.path.join
+    nib.save(img, os.path.normpath(dest_path))
 
 
 def nii_to_tiff(src_path, dest_path):

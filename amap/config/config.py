@@ -20,6 +20,7 @@ config_dirs = [
     'amap/config',  # WARNING: relies on working directory and uses hard coded sep
     'config',  # For sphinx doc  # TODO: add check that run by sphinx
 ]
+config_dirs = [os.path.normpath(d) for d in config_dirs]
 config_paths = [os.path.abspath(os.path.join(d, conf_file_name)) for d in config_dirs]
 
 config_path = None

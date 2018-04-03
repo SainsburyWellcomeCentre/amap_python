@@ -1,30 +1,25 @@
-import os
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage import morphology
 from tqdm import trange
 
 from amap.brain import brain_io as bio
+from amap.config.atlas import get_atlas_path, get_atlas_pixel_sizes_from_config
 
 
 def get_atlas_pix_sizes():
-    atlas, config_obj = load_atlas()
+    atlas = load_atlas()
     pixel_sizes = atlas.header.get_zooms()
     if pixel_sizes != (0, 0, 0):
         return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
     else:
-        return config_obj['atlas']['pixel_size']
+        return get_atlas_pixel_sizes_from_config()
 
 
 def load_atlas():
-    from amap.config.config import config_obj
-    config_atlas_path = config_obj['atlas']['path']
-    if config_atlas_path:
-        atlas_path = config_atlas_path
-    else:
-        atlas_path = os.path.join(*config_obj['atlas']['default_path'])
+    atlas_path = get_atlas_path()
     atlas = bio.load_nii(atlas_path)
-    return atlas, config_obj
+    return atlas
 
 
 class BrainProcessor(object):
