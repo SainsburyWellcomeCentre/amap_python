@@ -4,6 +4,8 @@ import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import numpy as np
+from amap.brain.brain_processor import BrainProcessor
+from amap.registration.brain_registration import BrainRegistration
 
 
 def get_parser():
@@ -123,13 +125,7 @@ def process(_args):
     return brain_reg.registered_atlas_img_path
 
 
-if __name__ == '__main__':
-    cwd = os.path.abspath('.')
-    sys.path.insert(0, cwd)
-
-    from amap.brain.brain_processor import BrainProcessor
-    from amap.registration.brain_registration import BrainRegistration
-
+def main():
     args = get_parser().parse_args()
     results_path = process(args)
 
@@ -139,3 +135,12 @@ if __name__ == '__main__':
         delete_intermediate_files(args)
     if args.delete_logs:
         delete_regular_logs(args)
+
+
+if __name__ == '__main__':
+    cwd = os.path.abspath('.')
+    sys.path.insert(0, cwd)
+
+    from amap.brain.brain_processor import BrainProcessor
+    from amap.registration.brain_registration import BrainRegistration
+    main()
