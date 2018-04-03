@@ -6,15 +6,15 @@ class AmapConfigError(Exception):
     pass
 
 
-global_config_directory = os.path.join(sys.prefix, 'etc', 'amap')
 user_config_dir = os.path.join(os.path.expanduser('~'), '.amap')
+global_config_directory = os.path.join(sys.prefix, 'etc', 'amap')
 shared_directory = os.path.join(sys.prefix, 'share', 'amap')  # Where resources should go
 
 conf_file_name = 'amap.conf'
 
 # The config will be read with this priority
 config_dirs = [
-    os.path.join(user_config_dir, conf_file_name),
+    user_config_dir,
     global_config_directory,
     '../amap/config',
     'amap/config',  # WARNING: relies on working directory and uses hard coded sep
