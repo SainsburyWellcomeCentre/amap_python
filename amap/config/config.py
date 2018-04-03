@@ -51,3 +51,9 @@ try:
 except KeyError:
     raise ValueError('Platform {} is not recognised as a valid platform. Valid platforms are : {}'.
                      format(platform.system(), __os_folder_names.keys()))
+
+
+def get_binary(binaries_folder, program_name):
+    from pkg_resources import resource_filename, Requirement
+    path = "{}/{}/{}".format(binaries_folder, os_folder_name, program_name)
+    return resource_filename(Requirement.parse("amap"), path)
