@@ -1,5 +1,8 @@
 import os
 
+from amap.config.atlas import get_atlas_element_path, get_atlas_element_path_or_default, \
+    get_atlas_pixel_sizes_from_config
+
 
 class RegistrationParams(object):
     def __init__(self):
@@ -27,20 +30,15 @@ class RegistrationParams(object):
         self.reference_image_histo_n_bins = ('--rbn', freeform_config['histo_n_bins']['reference'])
         self.floating_image_histo_n_bins = ('--fbn', freeform_config['histo_n_bins']['floating'])
 
-        # FIXME: see if need to compute paths below if default
-        atlas_config = self.config['atlas']
+        self.default_atlas_path = get_atlas_element_path('default_atlas_name')
+        self.default_atlas_brain_path = get_atlas_element_path('default_brain_name')
+        self.default_hemispheres_path = get_atlas_element_path('default_hemispheres_name')
 
-        self.default_atlas_path = os.path.abspath(os.path.join(*atlas_config['default_path']))
-        self.default_atlas_brain_path = os.path.abspath(os.path.join(*atlas_config['default_brain_path']))
-        self.default_hemispheres_path = os.path.abspath(os.path.join(*atlas_config['default_hemispheres_path']))
-        cfg_atlas_path = atlas_config['path']
-        self.atlas_path = cfg_atlas_path if cfg_atlas_path else self.default_atlas_path
-        cfg_brain_path = atlas_config['brain_path']
-        self.atlas_brain_path = cfg_brain_path if cfg_brain_path else self.default_atlas_brain_path
-        cfg_hemispheres_path = atlas_config['hemispheres_path']
-        self.hemispheres_path = cfg_hemispheres_path if cfg_hemispheres_path else self.default_hemispheres_path
+        self.atlas_path = get_atlas_element_path_or_default('atlas_path')
+        self.atlas_brain_path = get_atlas_element_path_or_default('brain_path')
+        self.hemispheres_path = get_atlas_element_path_or_default('hemispheres_path')
 
-        pixel_sizes = atlas_config['pixel_size']  # WARNING: mm
+        pixel_sizes = get_atlas_pixel_sizes_from_config()  # WARNING: mm
         self.atlas_x_pix_size = pixel_sizes['x']
         self.atlas_y_pix_size = pixel_sizes['y']
         self.atlas_z_pix_size = pixel_sizes['z']
@@ -90,20 +88,19 @@ class RegistrationParams(object):
         return self.format_param_pairs(self.get_segmentation_params())
 
     def __get_binary(self, program_type):
-        from amap.config.config import os_folder_name
-        nifty_reg_binaries_folder = os.path.abspath(os.path.join('.', 'niftyReg', 'bin', os_folder_name))
-
+        from amap.config.config import get_binary
         program_names = {
             'affine': 'reg_aladin',
             'freeform': 'reg_f3d',
             'segmentation': 'reg_resample'
         }
         program_name = program_names[program_type]
+        nifty_reg_binaries_folder = 'amap/bin/nifty_reg'
 
         path_from_config = self.config[program_type]['program_path']
         if path_from_config:
             program_path = path_from_config
         else:
-            program_path = os.path.join(nifty_reg_binaries_folder, program_name)
+            program_path = get_binary(nifty_reg_binaries_folder, program_name)  # TODO: add to cfg
 
         return program_path

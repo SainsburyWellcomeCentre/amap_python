@@ -6,20 +6,21 @@ class AmapConfigError(Exception):
     pass
 
 
-global_config_directory = os.path.join(sys.prefix, 'etc', 'amap')
 user_config_dir = os.path.join(os.path.expanduser('~'), '.amap')
+global_config_directory = os.path.join(sys.prefix, 'etc', 'amap')
 shared_directory = os.path.join(sys.prefix, 'share', 'amap')  # Where resources should go
 
 conf_file_name = 'amap.conf'
 
 # The config will be read with this priority
 config_dirs = [
-    os.path.join(user_config_dir, conf_file_name),
+    user_config_dir,
     global_config_directory,
     '../amap/config',
     'amap/config',  # WARNING: relies on working directory and uses hard coded sep
     'config',  # For sphinx doc  # TODO: add check that run by sphinx
 ]
+config_dirs = [os.path.normpath(d) for d in config_dirs]
 config_paths = [os.path.abspath(os.path.join(d, conf_file_name)) for d in config_dirs]
 
 config_path = None
@@ -50,3 +51,9 @@ try:
 except KeyError:
     raise ValueError('Platform {} is not recognised as a valid platform. Valid platforms are : {}'.
                      format(platform.system(), __os_folder_names.keys()))
+
+
+def get_binary(binaries_folder, program_name):
+    from pkg_resources import resource_filename, Requirement
+    path = "{}/{}/{}".format(binaries_folder, os_folder_name, program_name)
+    return resource_filename(Requirement.parse("amap"), path)
