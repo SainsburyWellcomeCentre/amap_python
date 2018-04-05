@@ -4,6 +4,8 @@ import psutil
 import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 
+import warnings
+
 import numpy as np
 from skimage import transform
 
@@ -28,7 +30,9 @@ def scale_z(volume, scaling_factor, verbose=False):
     if verbose:
         print('Scaling z dimension')
     volume = np.swapaxes(volume, 1, 2)
-    volume = transform.rescale(volume, (1, scaling_factor), preserve_range=True)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        volume = transform.rescale(volume, (1, scaling_factor), preserve_range=True)
     return np.swapaxes(volume, 1, 2)
 
 
@@ -124,9 +128,11 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
                                len(paths_sequence)),
                               dtype=img.dtype)
         if x_scaling_factor != 1 and y_scaling_factor != 1:
-            img = transform.rescale(img,
-                                    (x_scaling_factor, y_scaling_factor), mode='constant',
-                                    preserve_range=True)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                img = transform.rescale(img,
+                                        (x_scaling_factor, y_scaling_factor), mode='constant',
+                                        preserve_range=True)
         volume[:, :, i] = img
     return volume
 
