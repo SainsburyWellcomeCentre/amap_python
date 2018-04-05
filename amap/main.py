@@ -92,6 +92,12 @@ def delete_regular_logs(_args):
 
 def process(_args):
     sample_name = _args.sample_name
+    if not os.path.exists(_args.output_folder):
+        result = input("Output folder does not exist, would you like to create it. [Y/n]")
+        if result.lower() in ('Y', 'Yes', 'yes', 'y', ''):  # TEST:
+            os.makedirs(_args.output_folder)
+        else:
+            sys.exit('Missing output folder, aborting')
     if _args.preprocess:
         print("Preprocessing")
         brain = BrainProcessor(_args.target_brain_path, _args.output_folder,
