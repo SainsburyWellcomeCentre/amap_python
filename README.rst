@@ -16,8 +16,8 @@ reliability is shown to be on par with expert human raters
 `(publication) <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4941048/>`__.
 aMAP, internally uses NiftyReg (a rapid image registration toolkit, originally developed for human MRI data),
 that we modified to enable rapid processing of high-resolution 3D light microscopy data.
-NiftyReg being originally developed for MRI data, it uses the Neuroimaging Informatics Technology Initiative (NIfTI)
-image format which is often referred to by its .nii file extension.
+NiftyReg being originally developed for MRI data, it uses the Neuroimaging Informatics Technology Initiative `(NIfTI)
+image format <https://nifti.nimh.nih.gov/nifti-1/>`__ which is often referred to by its .nii file extension.
 
 aMAP has been verified using a smoothed version of the atlas developed by
 `Kim et al (2014) <http://www.cell.com/cell-reports/abstract/S2211-1247%2814%2901043-2>`__, (see below).
@@ -26,8 +26,8 @@ and follow the nomenclature of the Allen Mouse Brain Atlas.
 
 aMAP consists of 4 parts:
     #. The main program (this repository)
-    #. The binaries for the registration software (NiftyReg)
-    #. The atlas used in the publication
+    #. The binaries for the registration software (NiftyReg) (also included in this repository)
+    #. The atlas used in the publication (which can be downloaded automatically by the installation script)
     #. Test data
 
 
@@ -40,7 +40,7 @@ Prerequisites
     A workstation computer (e.g. Mac Pro or Dell Precision) with at least 16GB of RAM is necessary.
     For smooth viewing of .nii fils in matlab, we recommend at least 24GB of RAM.
 
-aMAP has been tested on Mac (OS X Yosemite) and Linux (Debian Jessie) machines, for which binaries are provided.
+aMAP has been tested on Mac (OS X Yosemite) and Linux (Ubuntu 16.04) machines, for which binaries are provided.
 The NiftyReg command line interface has been designed to also run on Windows, but this has not yet been tested by us
 and will require compilation from source.
 
@@ -62,11 +62,20 @@ Installing aMAP
 To install aMAP:
     #. Download or clone this repository
     #. If you downloaded the repository, extract the archive.
-    #. Download the `NiftyReg binaries <http://www.gatsby.ucl.ac.uk/%7Etest/aMAP-0.0.1.tar.gz>`__
-    #. Place these binaries inside the amap_python folder under amap_python;niftyReg;bin;
-        (the semi-colon represents the file separator on your operating system)
-    #. Download the atlas and place it under amap_python;data;atlas;
+    #. Execute the installation script:
+        .. code-block:: bash
+
+            cd amap_python  # assuming this is where it is installed (change the path otherwise)
+            pip3 install setuptools --user  # or remove --user and start with sudo to install system-wide
+            # assuming you want to install the atlas use:
+            python3 setup.py install --install-atlas --user
+
     #. If required download the test data
+
+..    #. Download the `NiftyReg binaries <http://www.gatsby.ucl.ac.uk/%7Etest/aMAP-0.0.1.tar.gz>`__
+..    #. Place these binaries inside the amap_python folder under amap_python;niftyReg;bin;
+..        (the semi-colon represents the file separator on your operating system)
+..    #. Download the atlas and place it under amap_python;data;atlas;
 
 
 Using aMAP
