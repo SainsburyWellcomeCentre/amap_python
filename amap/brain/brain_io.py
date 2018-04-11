@@ -90,8 +90,8 @@ def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter
     return loading_function(paths, x_scaling_factor, y_scaling_factor)
 
 
-def load_img_sequence(img_sequence_file, x_scaling_factor, y_scaling_factor, load_parallel=False):
-    with open(img_sequence_file, 'r') as in_file:
+def load_img_sequence(img_sequence_file_path, x_scaling_factor, y_scaling_factor, load_parallel=False):
+    with open(img_sequence_file_path, 'r') as in_file:
         paths = in_file.readlines()
         paths = [p.strip() for p in paths]
     loading_function = threaded_load_from_sequence if load_parallel else load_from_paths_sequence
