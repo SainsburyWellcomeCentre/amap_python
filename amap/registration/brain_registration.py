@@ -9,6 +9,14 @@ from amap.registration.registration_params import RegistrationParams
 from amap.utils.run_command import safe_execute_command, SafeExecuteCommandError
 
 
+class RegistrationError(Exception):
+    pass
+
+
+class SegmentationError(RegistrationError):
+    pass
+
+
 class BrainRegistration(object):
     def __init__(self, sample_name, target_brain_path, output_folder):
         self.sample_name = sample_name
@@ -59,7 +67,8 @@ class BrainRegistration(object):
                     bio.tiff_to_nii(img_path, nii_path)
                     setattr(self, img_path_var_name, nii_path)
                 else:
-                    sys.exit('Cannot perform registration, image {} not in supported format'.format(img_path))
+                    raise RegistrationError('Cannot perform registration, image {} not in supported format'
+                                            .format(img_path))
 
     def _prepare_affine_reg_cmd(self):
         cmd = '{} {} -flo {} -ref {} -aff {} -res {}'.format(
@@ -76,7 +85,7 @@ class BrainRegistration(object):
             safe_execute_command(self._prepare_affine_reg_cmd(),
                                  self.affine_log_file_path, self.affine_error_path)
         except SafeExecuteCommandError as err:
-            sys.exit('Affine registration failed; {}'.format(err))
+            raise RegistrationError('Affine registration failed; {}'.format(err))
 
     def _prepare_freeform_reg_cmd(self):
         cmd = '{} {} -aff {} -flo {} -ref {} -cpp {} -res {}'.format(
@@ -94,7 +103,7 @@ class BrainRegistration(object):
             safe_execute_command(self._prepare_freeform_reg_cmd(),
                                  self.freeform_log_file_path, self.freeform_error_file_path)
         except SafeExecuteCommandError as err:
-            sys.exit('Freeform registration failed; {}'.format(err))
+            raise RegistrationError('Freeform registration failed; {}'.format(err))
 
     def _prepare_segmentation_cmd(self, floating_image_path, dest_img_path):
         cmd = '{} {} -cpp {} -flo {} -ref {} -res {}'.format(
@@ -111,7 +120,7 @@ class BrainRegistration(object):
             safe_execute_command(self._prepare_segmentation_cmd(self.atlas_img_path, self.registered_atlas_img_path),
                                  self.segmentation_log_file, self.segmentation_error_file)
         except SafeExecuteCommandError as err:
-            sys.exit('Segmentation failed; {}'.format(err))
+            SegmentationError('Segmentation failed; {}'.format(err))
 
     def register_hemispheres(self):
         try:
@@ -119,7 +128,7 @@ class BrainRegistration(object):
                                                                 self.registered_hemispheres_img_path),
                                  self.segmentation_log_file, self.segmentation_error_file)
         except SafeExecuteCommandError as err:
-            sys.exit('Segmentation failed; {}'.format(err))
+            SegmentationError('Segmentation failed; {}'.format(err))
 
     def get_reg_params(self):
         return RegistrationParams()
