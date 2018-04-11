@@ -50,7 +50,7 @@ class BrainProcessor(object):
                 # print("Flipping axis {}".format('xyz'[axis_idx]))
                 self.target_brain = np.flip(self.target_brain, axis_idx)
 
-    def swap_orientation_from_original_to_atlas(self, atlas_orientation='horizontal', flip_z=False):
+    def swap_orientation_from_original_to_atlas(self, atlas_orientation='horizontal'):
         if atlas_orientation != 'horizontal':
             raise NotImplementedError('Only supported atlas orientation is horizontal')
         transpositions = {
@@ -61,7 +61,7 @@ class BrainProcessor(object):
         transposition = transpositions[self.original_orientation]
         self.target_brain = np.transpose(self.target_brain, transposition)
 
-    def swap_orientation_from_atlas_to_original(self, atlas_orientation='horizontal', flip_z=False):
+    def swap_orientation_from_atlas_to_original(self, atlas_orientation='horizontal'):
         if atlas_orientation != 'horizontal':
             raise NotImplementedError('Only supported atlas orientation is horizontal')
         transpositions = {
