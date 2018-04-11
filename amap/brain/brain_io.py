@@ -135,7 +135,7 @@ def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter
     :param str src_folder:
     :param float x_scaling_factor: The scaling of the brain along the x dimension (applied on loading before return)
     :param float y_scaling_factor: The scaling of the brain along the y dimension (applied on loading before return)
-    :param str name_filter: will have to be present in the file names for them
+    :param str name_filter: will have to be present in the file names for them\
     to be considered part of the sample
     :param bool load_parallel: Use multiprocessing to speedup image loading
     :return: The loaded and scaled brain
