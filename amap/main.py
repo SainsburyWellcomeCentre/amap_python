@@ -4,8 +4,8 @@ import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 import numpy as np
-from amap.brain.brain_processor import BrainProcessor
-from amap.registration.brain_registration import BrainRegistration
+from amap.brain.brain_processor import BrainProcessor  # Warning: required to allow direct or indirect import
+from amap.registration.brain_registration import BrainRegistration  # Warning: required to allow direct or indirect import
 
 
 def get_parser():
@@ -87,7 +87,7 @@ def delete_error_logs(_args):
 
 
 def delete_regular_logs(_args):
-    delete_logs(_args, ('affine.err', 'freeform.err', 'segment.err'))
+    delete_logs(_args, ('affine.log', 'freeform.log', 'segment.log'))
 
 
 def process(_args):
