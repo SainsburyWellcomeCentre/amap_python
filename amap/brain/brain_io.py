@@ -19,6 +19,7 @@ from skimage import transform
 import tifffile
 import nibabel as nib
 from tqdm import tqdm
+from natsort import natsorted
 
 
 class BrainIoLoadException(Exception):
@@ -64,7 +65,7 @@ def scale_z(volume, scaling_factor, verbose=False):
 
 # ######################## INPUT METHODS ####################
 def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_factor=1.0,
-             load_parallel=False, verbose=False):
+             load_parallel=False, sort_input_file=False, verbose=False):
     """
     Load the brain specified by
     This function will guess the type of data and hence call the appropriate
@@ -76,8 +77,9 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
     :param float x_scaling_factor: The scaling of the brain along the x dimension (applied on loading before return)
     :param float y_scaling_factor: The scaling of the brain along the y dimension (applied on loading before return)
     :param float z_scaling_factor: The scaling of the brain along the z dimension (applied on loading before return)
-    :param bool load_parallel:
-    :param bool verbose:
+    :param bool load_parallel: Load planes in parallel using multiprocessing for faster data loading
+    :param bool sort_input_file: If set to true and the input is a filepaths file, it will be naturally sorted
+    :param bool verbose: Print more information about the process
     :return: The loaded brain
     :rtype: np.ndarray
     """
@@ -85,7 +87,8 @@ def load_any(src_path, x_scaling_factor=1.0, y_scaling_factor=1.0, z_scaling_fac
         img = load_from_folder(src_path, x_scaling_factor, y_scaling_factor,
                                name_filter='.tif', load_parallel=load_parallel)
     elif src_path.endswith('.txt'):
-        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor, load_parallel=load_parallel)
+        img = load_img_sequence(src_path, x_scaling_factor, y_scaling_factor, load_parallel=load_parallel,
+                                sort=sort_input_file)
     elif src_path.endswith('.tif'):
         img = load_img_stack(src_path)
     elif src_path.endswith(('.nii', '.nii.gz')):
@@ -149,7 +152,7 @@ def load_from_folder(src_folder, x_scaling_factor, y_scaling_factor, name_filter
     return loading_function(paths, x_scaling_factor, y_scaling_factor)
 
 
-def load_img_sequence(img_sequence_file_path, x_scaling_factor, y_scaling_factor, load_parallel=False):
+def load_img_sequence(img_sequence_file_path, x_scaling_factor, y_scaling_factor, load_parallel=False, sort=False):
     """
     Load a brain from a sequence of files specified in a text file containing an ordered list of paths
 
@@ -157,12 +160,15 @@ def load_img_sequence(img_sequence_file_path, x_scaling_factor, y_scaling_factor
     :param float x_scaling_factor: The scaling of the brain along the x dimension (applied on loading before return)
     :param float y_scaling_factor: The scaling of the brain along the y dimension (applied on loading before return)
     :param bool load_parallel: Use multiprocessing to speedup image loading
+    :param bool sort: If set to true will perform a natural sort of the file paths in the list
     :return: The loaded and scaled brain
     :rtype: np.ndarray
     """
     with open(img_sequence_file_path, 'r') as in_file:
         paths = in_file.readlines()
         paths = [p.strip() for p in paths]
+    if sort:
+        paths = natsorted(paths)
     loading_function = threaded_load_from_sequence if load_parallel else load_from_paths_sequence
     return loading_function(paths, x_scaling_factor, y_scaling_factor)
 

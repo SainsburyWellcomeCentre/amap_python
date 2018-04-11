@@ -47,7 +47,18 @@ class BrainProcessor(object):
     - filtering using despeckle and pseudo flatfield
     """
     def __init__(self, target_brain_path, output_folder, x_pix_mm, y_pix_mm, z_pix_mm,
-                 original_orientation='coronal', load_parallel=False):
+                 original_orientation='coronal', load_parallel=False, sort_input_file=False):
+        """
+
+        :param str target_brain_path: The path to the brain to be processed (image file, paths file or folder)
+        :param str output_folder: The folder where to store the results
+        :param float x_pix_mm: The pixel spacing in the x dimension. It is used to scale the brain to the atlas.
+        :param float y_pix_mm: The pixel spacing in the x dimension. It is used to scale the brain to the atlas.
+        :param float z_pix_mm: The pixel spacing in the x dimension. It is used to scale the brain to the atlas.
+        :param str original_orientation:
+        :param bool load_parallel: Load planes in parallel using multiprocessing for faster data loading
+        :param bool sort_input_file: If set to true and the input is a filepaths file, it will be naturally sorted
+        """
         self.target_brain_path = target_brain_path
 
         atlas_pixel_sizes = get_atlas_pix_sizes()
@@ -58,7 +69,7 @@ class BrainProcessor(object):
         self.original_orientation = original_orientation
 
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling,
-                                         load_parallel=load_parallel)
+                                         load_parallel=load_parallel, sort_input_file=sort_input_file)
         self.swap_orientation_from_original_to_atlas()
         self.output_folder = output_folder
 
