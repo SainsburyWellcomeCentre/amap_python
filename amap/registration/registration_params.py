@@ -3,6 +3,11 @@ from amap.config.atlas import get_atlas_element_path, get_atlas_element_path_or_
 
 
 class RegistrationParams(object):
+    """
+    A class to store and access the variables required for the registration
+    including the paths of the different binaries and atlases.
+    Options are typically stored as a tuple of (option_string, option_value)
+    """
     def __init__(self):
         from amap.config.config import config_obj  # Avoids import in tests
         self.config = config_obj
@@ -42,6 +47,12 @@ class RegistrationParams(object):
         self.atlas_z_pix_size = pixel_sizes['z']
 
     def get_affine_reg_params(self):
+        """
+        Get the parameters (options) required for the affine registration step
+
+        :return: The affine registration options.
+        :rtype: list
+        """
         affine_params = [
             self.affine_reg_pyramid_steps,
             self.affine_reg_used_pyramid_steps
@@ -49,6 +60,12 @@ class RegistrationParams(object):
         return affine_params
 
     def get_freeform_reg_params(self):
+        """
+        Get the parameters (options) required for the freeform (elastic) registration step
+
+        :return: The freeform registration options.
+        :rtype: list
+        """
         freeform_params = [
             self.freeform_reg_pyramid_steps,
             self.freeform_reg_used_pyramid_steps,
@@ -62,6 +79,12 @@ class RegistrationParams(object):
         return freeform_params
 
     def get_segmentation_params(self):
+        """
+        Get the parameters (options) required for the segmentation step (propagation of transformation)
+
+        :return: The affine registration options.
+        :rtype: list
+        """
         return [('-inter', 0), ]
 
     def format_param_pairs(self, params_pairs):
@@ -69,7 +92,8 @@ class RegistrationParams(object):
         Format the list of params pairs into a string
 
         :param list params_pairs: A list of tuples of the form (option_string, option_value) (e.g. (-sx, 10))
-        :return:
+        :return: The options as a formatted string
+        :rtype: str
         """
         out = ''
         for param in params_pairs:
@@ -77,15 +101,40 @@ class RegistrationParams(object):
         return out
 
     def format_affine_params(self):
+        """
+        Generate the string of formatted affine registration options
+
+        :return: The formatted string
+        :rtype: str
+        """
         return self.format_param_pairs(self.get_affine_reg_params())
 
     def format_freeform_params(self):
+        """
+        Generate the string of formatted freeform registration options
+
+        :return: The formatted string
+        :rtype: str
+        """
         return self.format_param_pairs(self.get_freeform_reg_params())
 
     def format_segmentation_params(self):
+        """
+        Generate the string of formatted segmentation options
+
+        :return: The formatted string
+        :rtype: str
+        """
         return self.format_param_pairs(self.get_segmentation_params())
 
     def __get_binary(self, program_type):
+        """
+        Get the path to the registration (from nifty_reg) program based on the type
+
+        :param str program_type:
+        :return: The program path
+        :rtype: str
+        """
         from amap.config.config import get_binary
         program_names = {
             'affine': 'reg_aladin',
