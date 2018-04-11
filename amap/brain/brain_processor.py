@@ -1,3 +1,9 @@
+"""
+brain_processor
+===============
+
+A module to prepare brains for registration
+"""
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from skimage import morphology

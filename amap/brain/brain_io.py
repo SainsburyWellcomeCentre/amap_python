@@ -1,4 +1,7 @@
 """
+brain_io
+========
+
 A module to load and save 'brains' (image 3D volumes) as either nifty image files, tiff stacks or sequences of
 tiffs either from the folder they are stored in or a file containing a sorted list of file paths
 """

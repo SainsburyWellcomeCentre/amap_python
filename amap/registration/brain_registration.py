@@ -1,3 +1,9 @@
+"""
+brain_registration
+==================
+
+The module to actually start the registration
+"""
 import os
 import sys
 
