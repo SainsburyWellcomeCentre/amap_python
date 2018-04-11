@@ -1,3 +1,9 @@
+"""
+registration_params
+===================
+
+The module to handle all the registration options and program binaries
+"""
 from amap.config.atlas import get_atlas_element_path, get_atlas_element_path_or_default, \
     get_atlas_pixel_sizes_from_config
 
