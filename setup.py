@@ -16,7 +16,8 @@ requirements = [
     'tifffile',
     'nibabel',
     'tqdm',
-    'configobj'
+    'configobj',
+    'natsort'
 ]
 
 

@@ -22,16 +22,20 @@ def get_parser():
     parser.add_argument('output_folder', metavar='output-folder', type=str,
                         help='The folder in which to save all the temporary '
                              'and final output of the registration process')
+    parser.add_argument('--sort-input-file', dest='sort_input_file', action='store_true',
+                        help='If set to true, the input text file will be sorted using natural sorting.'
+                             'This means that the file paths will be sorted as would be expected by a human and'
+                             'not purely alphabetically')
     parser.add_argument('-x', '--x-pixel-mm', dest='x_pixel_mm', type=float, default=0.001,
-                        help='Pixel size of the data in the first dimension.'
+                        help='Pixel spacing of the data in the first dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
     parser.add_argument('-y', '--y-pixel-mm', dest='y_pixel_mm', type=float, default=0.001,
-                        help='Pixel size of the data in the second dimension.'
+                        help='Pixel spacing of the data in the second dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
     parser.add_argument('-z', '--z-pixel-mm', dest='z_pixel_mm', type=float, default=0.005,
-                        help='Pixel size of the data in the third dimension.'
+                        help='Pixel spacing of the data in the third dimension.'
                              'Warning, for compatibility with the Nifty format'
                              'the value must be specified in mm.')
     parser.add_argument('--save-unfiltered', dest='save_unfiltered', action='store_true',
@@ -140,7 +144,9 @@ def process(_args):
         print("Preprocessing")
         brain = BrainProcessor(_args.target_brain_path, _args.output_folder,
                                _args.x_pixel_mm, _args.y_pixel_mm, _args.z_pixel_mm,
-                               original_orientation=_args.orientation, load_parallel=_args.load_parallel)
+                               original_orientation=_args.orientation,
+                               load_parallel=_args.load_parallel,
+                               sort_input_file=_args.sort_input_file)
         brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
         if _args.save_unfiltered:
             downsampled_brain_path = os.path.join(_args.output_folder, '{}_{}.nii'
