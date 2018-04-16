@@ -45,7 +45,7 @@ def extract_atlas(atlas_path, atlas_dest_path):
     tar.close()
 
 
-def install_atlas(atlas_download_path, atlas_install_path):  # TODO: che3ck that intermediate folders exist
+def install_atlas(atlas_download_path, atlas_install_path):  # TODO: check that intermediate folders exist
     if not os.path.exists(os.path.dirname(atlas_download_path)):
         raise AtlasInstallError("Could not find folder {} to download atlas"
                                 .format(os.path.dirname(atlas_download_path)))

@@ -193,7 +193,8 @@ class BrainRegistration(object):
         """
         Returns the registration params. Mostly used to simplify tests setup
 
-        :return:
+        :return: The registration params
+        :rtype: RegistrationParams
         """
         return RegistrationParams()
 

@@ -53,7 +53,6 @@ class BrainProcessor(object):
         Flips the brain along the specified axes.
 
         :param tuple axes: a tuple of 3 booleans indicating which axes to flip or not
-        :return:
         """
         for axis_idx, flip_axis in enumerate(axes):
             if flip_axis:
@@ -68,7 +67,6 @@ class BrainProcessor(object):
         is oriented in the horizontal plane
 
         :param str atlas_orientation:
-        :return:
         """
         if atlas_orientation != 'horizontal':
             raise NotImplementedError('Only supported atlas orientation is horizontal')
@@ -88,7 +86,6 @@ class BrainProcessor(object):
         is oriented in the horizontal plane.
 
         :param str atlas_orientation:
-        :return:
         """
         if atlas_orientation != 'horizontal':
             raise NotImplementedError('Only supported atlas orientation is horizontal')
@@ -104,8 +101,6 @@ class BrainProcessor(object):
         """
         Applies a set of filters to the brain to avoid overfitting details in the image during
         registration.
-
-        :return:
         """
         self.swap_orientation_from_atlas_to_original()  # process along original z dimension
         self.target_brain = BrainProcessor.filter_for_registration(self.target_brain)
@@ -159,16 +154,16 @@ def filter_plane_for_registration(img_plane):
 
 def pseudo_flatfield(img_plane, sigma=5):
     """
-    Pseudo flat field filter implementation using a detrending by a heavily gaussian filtered
+    Pseudo flat field filter implementation using a de-trending by a heavily gaussian filtered
     copy of the image.
 
     :param np.array img_plane: The image to filter
-    :param int sigma: The sigma of the gaussian filter applied to the image used for detrending
+    :param int sigma: The sigma of the gaussian filter applied to the image used for de-trending
     :return: The pseudo flat field filtered image
     :rtype: np.array
     """
     # TODO: check gausian filter mode (one of {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’})
-    img_plane = img_plane.copy()  # FIXME: check if necessary
+    img_plane = img_plane.copy()  # OPTIMISE: check if necessary
     filtered_img = gaussian_filter(img_plane, sigma)
     return img_plane / (filtered_img + 1)
 

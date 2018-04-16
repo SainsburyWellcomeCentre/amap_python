@@ -3,7 +3,6 @@ import subprocess
 from tempfile import gettempdir
 
 
-# TODO: check if needs to extend with prefix for step and sample
 def safe_execute_command(cmd, log_file_path=None, error_file_path=None):
     """
     Executes a command in the terminal, making sure that the output can
