@@ -62,6 +62,15 @@ def get_atlas_element_path_or_default(config_entry_name):
     else:
         return get_atlas_element_path('default_{}'.format(config_entry_name.replace('path', 'name')))
 
+
+def make_atlas_scale_transformation_matrix():
+    scale = get_atlas_pix_sizes()
+    transformation_matrix = np.eye(4)
+    for i, axis in enumerate(('x', 'y', 'z')):
+        transformation_matrix[i, i] = scale[axis]
+    return transformation_matrix
+
+
 def get_atlas_pix_sizes():
     """
     Get the dictionary of x, y, z from the after loading it or if the atlas size is default,

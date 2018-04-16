@@ -133,13 +133,13 @@ class BrainProcessor(object):
         Save self.target_brain to dest_path as a nifty image.
         The scale (zooms of the output nifty image) is copied from the atlas brain.
 
-        :param str dest_path:
-        :return:
+        :param str dest_path: Where to save the image on the filesystem
         """
         atlas_pix_sizes = get_atlas_pix_sizes()
+        transformation_matrix = make_atlas_scale_transformation_matrix()
         bio.to_nii(self.target_brain, dest_path,
                    scale=(atlas_pix_sizes['x'], atlas_pix_sizes['y'], atlas_pix_sizes['z']),
-                   affine_transform=np.eye(4)*0.01)  # FIXME: do not hardcode scale here
+                   affine_transform=transformation_matrix)
 
 
 def filter_plane_for_registration(img_plane):

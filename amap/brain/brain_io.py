@@ -252,20 +252,23 @@ def to_nii(img, dest_path, scale=None, affine_transform=None):  # TODO: see if w
     nib.save(img, dest_path)
 
 
-def tiff_to_nii(src_path, dest_path):
+def tiff_to_nii(src_path, dest_path, affine_transform=None):
     """
     Load the tiff image and save it as a nifty image.
 
     :param str src_path: The path of the tiff image (can be multiple plains (folder of files list) or a single stack
     :param str dest_path: The path to save the nifty image to.
+    :param np.array affine_transform: a 4x4 matrix specifying the affine transformation to be associated with the nii
     :return:
     """
     if not dest_path.endswith('.nii.gz'):
         raise ValueError('Path is expected to end in "nii.gz", got {} instead.'.format(dest_path))
 
     img = load_any(src_path)
+    if affine_transform is None:
+        affine_transform = np.eye(4)
     if not isinstance(img, nib.Nifti1Image):
-        img = nib.Nifti1Image(img, np.eye(4))
+        img = nib.Nifti1Image(img, affine_transform)
     nib.save(img, os.path.normpath(dest_path))
 
 
