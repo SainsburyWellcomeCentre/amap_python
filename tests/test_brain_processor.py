@@ -5,6 +5,8 @@ import pytest
 
 from amap.brain import brain_processor as bp
 
+import amap.config.atlas
+
 
 def test_normalise_to_16_bits():
     a = np.array([0, 2, 4, 240])
@@ -33,6 +35,6 @@ def test_get_atlas_pix_sizes(monkeypatch):
                                                                    'data',
                                                                    'atlas',
                                                                    'allen_cff_october_2017_atlas_annotations_10_um.nii')})
-    for key, expected_key in zip(sorted(bp.get_atlas_pix_sizes().keys()), ('x', 'y', 'z')):
+    for key, expected_key in zip(sorted(amap.config.atlas.get_atlas_pix_sizes().keys()), ('x', 'y', 'z')):
         assert key == expected_key
-    assert (isinstance(v, float) for v in bp.get_atlas_pix_sizes().values())
+    assert (isinstance(v, float) for v in amap.config.atlas.get_atlas_pix_sizes().values())

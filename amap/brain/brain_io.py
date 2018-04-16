@@ -233,21 +233,21 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
 
 
 # ######################## OUTPUT METHODS ########################
-def to_nii(img, dest_path, scale=(1, 1, 1), affine_transform=None):  # TODO: see if we want also real units scale
+def to_nii(img, dest_path, scale=None, affine_transform=None):  # TODO: see if we want also real units scale
     """
     Write the brain volume to disk as nifty image.
 
     :param img: A nifty image object or numpy array brain
     :param str dest_path: The path where to save the brain.
     :param tuple scale: A tuple of floats to indicate the 'zooms' of the nifty image
-    :param np.ndarray affine_transform: A matrix indicating the transform to save in the metadata of the image
+    :param np.ndarray affine_transform: A 4x4 matrix indicating the transform to save in the metadata of the image
     :return:
     """
     if affine_transform is None:
         affine_transform = np.eye(4)
     if not isinstance(img, nib.Nifti1Image):
         img = nib.Nifti1Image(img, affine_transform)
-    if scale != (1, 1, 1):  # FIXME: do only if img.get_zomms() is (1, 1, 1) and scale is not
+    if scale is not None:
         img.header.set_zooms(scale)
     nib.save(img, dest_path)
 

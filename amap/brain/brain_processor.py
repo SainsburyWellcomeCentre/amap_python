@@ -5,38 +5,13 @@ brain_processor
 A module to prepare brains for registration
 """
 import numpy as np
+
 from scipy.ndimage import gaussian_filter
 from skimage import morphology
 from tqdm import trange
 
 from amap.brain import brain_io as bio
-from amap.config.atlas import get_atlas_path, get_atlas_pixel_sizes_from_config
-
-
-def get_atlas_pix_sizes():
-    """
-    Get the dictionary of x, y, z from the after loading it or if the atlas size is default,
-    use the values from the config file
-
-    :return: The dictionary of x, y, z pixel sizes
-    """
-    atlas = load_atlas()
-    pixel_sizes = atlas.header.get_zooms()
-    if pixel_sizes != (0, 0, 0):
-        return {axis: size for axis, size in zip(('x', 'y', 'z'), pixel_sizes)}
-    else:
-        return get_atlas_pixel_sizes_from_config()
-
-
-def load_atlas():
-    """
-    Load the atlas and return it
-
-    :return: The atlas (nifty image)
-    """
-    atlas_path = get_atlas_path()
-    atlas = bio.load_nii(atlas_path)
-    return atlas
+from amap.config.atlas import make_atlas_scale_transformation_matrix, get_atlas_pix_sizes
 
 
 class BrainProcessor(object):

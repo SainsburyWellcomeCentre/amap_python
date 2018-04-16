@@ -203,7 +203,9 @@ class BrainRegistration(object):
 
         :return:
         """
-        morphed_atlas = bio.load_nii(self.registered_atlas_img_path, as_array=True)
+        morphed_atlas = bio.load_nii(self.registered_atlas_img_path, as_array=False)
+        atlas_scale = morphed_atlas.header.get_zooms()
+        morphed_atlas = morphed_atlas.get_data()
         boundaries_mask = sk_segmentation.find_boundaries(morphed_atlas, mode='inner')
         boundaries = morphed_atlas * boundaries_mask
-        bio.to_nii(boundaries, self.outlines_file_path, scale=(0.01, 0.01, 0.01))  # FIXME: should remove hard coding
+        bio.to_nii(boundaries, self.outlines_file_path, scale=atlas_scale)

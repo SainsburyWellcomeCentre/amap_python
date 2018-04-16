@@ -159,7 +159,7 @@ def process(_args):
     else:
         filtered_brain_path = _args.target_brain_path
     print("Registering")
-    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder)  # TODO: check
+    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder)
     print("\tStarting affine registration")
     brain_reg.register_affine()  # TODO: have it as option
     print("\tStarting freeform registration")
