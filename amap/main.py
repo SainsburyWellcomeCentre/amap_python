@@ -71,6 +71,10 @@ def get_parser():
     parser.add_argument('--load-parallel', dest='load_parallel', action='store_true',
                         help='Whether to use multiprocessing to load the original image. Useful if stored '
                              'as a sequence of tiff files.')
+    parser.add_argument('--atlas-mask-planes', dest='atlas_mask_planes', type=int, nargs=2, default=(0, -1),
+                        help='The START and END of the range of planes to keep for the registration.'
+                             'The planes before START and after END will be masked. It defaults to the whole range'
+                             'meaning nothing will be masked.')
 
     return parser
 
@@ -159,7 +163,9 @@ def process(_args):
     else:
         filtered_brain_path = _args.target_brain_path
     print("Registering")
-    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder)
+    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder,
+                                  atlas_start_slice=_args.atlas_mask_planes[0],
+                                  atlas_end_slice=_args.atlas_mask_planes[1])
     print("\tStarting affine registration")
     brain_reg.register_affine()  # TODO: have it as option
     print("\tStarting freeform registration")

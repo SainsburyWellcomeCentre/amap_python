@@ -33,9 +33,8 @@ def check_mem(img_byte_size, n_imgs):
 
     Raises an error in case memory is insufficient to load that stack
 
-    :param int img_byte_size:
-    :param int n_imgs:
-    :return:
+    :param int img_byte_size: The size in bytes of an individual image plane
+    :param int n_imgs: The number of image planes to load
     :raises: BrainLoadException if not enough memory is available
     """
     total_size = img_byte_size * n_imgs
