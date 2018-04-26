@@ -22,9 +22,11 @@ class RegistrationParams(object):
         self.freeform_reg_program_path = self.__get_binary('freeform')
         self.segmentation_program_path = self.__get_binary('segmentation')
 
+        # affine (reg_aladin)
         self.affine_reg_pyramid_steps = ('-ln', self.config['affine']['n_steps'])
         self.affine_reg_used_pyramid_steps = ('-lp', self.config['affine']['use_n_steps'])
 
+        # freeform (ref_f3d)
         freeform_config = self.config['freeform']
         self.freeform_reg_pyramid_steps = ('-ln', freeform_config['n_steps'])
         self.freeform_reg_used_pyramid_steps = ('-lp', freeform_config['use_n_steps'])
@@ -38,6 +40,9 @@ class RegistrationParams(object):
 
         self.reference_image_histo_n_bins = ('--rbn', freeform_config['histo_n_bins']['reference'])
         self.floating_image_histo_n_bins = ('--fbn', freeform_config['histo_n_bins']['floating'])
+
+        # segmentation (reg_resample)
+        self.segmentation_interpolation_order = ('-inter', 0)
 
         self.default_atlas_path = get_atlas_element_path('default_atlas_name')
         self.default_atlas_brain_path = get_atlas_element_path('default_brain_name')
@@ -91,7 +96,7 @@ class RegistrationParams(object):
         :return: The affine registration options.
         :rtype: list
         """
-        return [('-inter', 0), ]
+        return [self.segmentation_interpolation_order, ]
 
     def format_param_pairs(self, params_pairs):
         """
