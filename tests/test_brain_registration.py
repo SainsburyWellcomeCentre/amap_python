@@ -48,6 +48,33 @@ def test_segment(brain_reg_fixture):
                                                        brain_reg_fixture.registered_atlas_img_path) == expected_output
 
 
+def test_generate_inverse_deformation(brain_reg_fixture):
+    expected_output = '/usr/local/nifty_reg/reg_resample -inter 0 ' \
+                      '-trans /home/bob/output_brains/test_brain_inverse_deformation_field.nii ' \
+                      '-flo /home/bob/brains/test_brain_downsampled.nii ' \
+                      '-ref /home/lambda/amap/atlas_brain.nii ' \
+                      '-res /home/bob/output_brains/test_brain_inverse_transformed.nii'
+    result = brain_reg_fixture._prepare_inverse_deformation_command(brain_reg_fixture.dataset_img_path,
+                                                                    brain_reg_fixture.inverse_transform_img_path)
+    assert result == expected_output
+
+
+def test_inverse_deformation_field(brain_reg_fixture):
+    """
+    :param brain_registration.BrainRegistration brain_reg_fixture:
+    :return:
+    """
+    expected_output = '/usr/local/nifty_reg/reg_transform ' \
+                      '-ref /home/bob/brains/test_brain_downsampled.nii ' \
+                      '-invNrr /home/bob/output_brains/test_brain_control_point_file.nii ' \
+                      '/home/lambda/amap/atlas_brain.nii ' \
+                      '/home/bob/output_brains/test_brain_inverse_deformation_field.nii'
+    # TEST: either that or deformation_field_file_path after generate_deformation_field
+
+    result = brain_reg_fixture._prepare_inverse_deformation_field_command()
+    assert result == expected_output
+
+
 def spike_generate_outlines():
     import numpy as np
     a = np.arange(10)

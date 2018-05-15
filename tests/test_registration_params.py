@@ -8,11 +8,13 @@ class RegistrationParamsMock(registration_params.RegistrationParams):
         self.affine_reg_program_path = '/usr/local/nifty_reg/reg_aladin'
         self.freeform_reg_program_path = '/usr/local/nifty_reg/reg_f3d'
         self.segmentation_program_path = '/usr/local/nifty_reg/reg_resample'
+        self.deformation_program_path = '/usr/local/nifty_reg/reg_transform'
 
         self.config = {
-            'affine': '/usr/local/nifty_reg/reg_aladin',
-            'freeform': '/usr/local/nifty_reg/reg_f3d',
-            'segmentation': '/usr/local/nifty_reg/reg_resample'
+            'affine': self.affine_reg_program_path,
+            'freeform': self.freeform_reg_program_path,
+            'segmentation': self.segmentation_program_path,
+            'deformation': self.deformation_program_path
         }
 
         self.affine_reg_pyramid_steps = ('-ln', 6)

@@ -82,6 +82,8 @@ def get_parser():
                         help='The START and END of the range of planes to keep for the registration.'
                              'The planes before START and after END will be masked. It defaults to the whole range'
                              'meaning nothing will be masked.')
+    parser.add_argument('-i', '--create-inverse-deformation', dest='create_inverse_deformation', action='store_true',
+                        help='Create a transformation of the brain to the atlas coordinates system.')
 
     return parser
 
@@ -190,6 +192,9 @@ def process(_args):
         if _args.generate_outlines:
             print("\tGenerating outlines")
             brain_reg.generate_outlines()
+    if _args.create_inverse_deformation:
+        print('\tGenerating inverse transformation')
+        brain_reg.generate_inverse_deformation()
     print("Done")
     return brain_reg.registered_atlas_img_path
 

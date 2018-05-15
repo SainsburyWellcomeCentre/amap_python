@@ -20,6 +20,7 @@ class RegistrationParams(object):
         self.affine_reg_program_path = self.__get_binary('affine')
         self.freeform_reg_program_path = self.__get_binary('freeform')
         self.segmentation_program_path = self.__get_binary('segmentation')
+        self.deformation_program_path = self.__get_binary('deformation')
 
         # affine (reg_aladin)
         self.affine_reg_pyramid_steps = ('-ln', self.config['affine']['n_steps'])
@@ -152,7 +153,8 @@ class RegistrationParams(object):
         program_names = {
             'affine': 'reg_aladin',
             'freeform': 'reg_f3d',
-            'segmentation': 'reg_resample'
+            'segmentation': 'reg_resample',
+            'deformation': 'reg_transform'
         }
         program_name = program_names[program_type]
         nifty_reg_binaries_folder = 'amap/bin/nifty_reg'

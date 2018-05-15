@@ -26,7 +26,12 @@ def expected_conf():
                 'floating': 128
             }
         },
-        'segmentation': {'program_path': ''},
+        'segmentation': {
+            'program_path': ''
+        },
+        'deformation': {
+            'program_path': ''
+        },
         'atlas': {
             'base_folder': '~/.amap/atlas/',
             'default_atlas_name': 'allen_cff_october_2017_atlas_annotations_10_um.nii',

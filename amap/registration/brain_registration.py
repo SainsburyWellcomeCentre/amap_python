@@ -24,6 +24,10 @@ class SegmentationError(RegistrationError):
     pass
 
 
+class TransformError(Exception):
+    pass
+
+
 def make_atlas_mask(atlas_img_path, mask_path, atlas_start_slice, atlas_end_slice):
     atlas = bio.load_nii(atlas_img_path, as_array=False)
     atlas_mask = atlas.get_data().astype(np.uint16)
@@ -69,9 +73,16 @@ class BrainRegistration(object):
 
         self.outlines_file_path = self.make_path('{}_outlines.nii')
 
+        self.deformation_field_file_path = self.make_path('{}_deformation_field.nii')
+        self.inverse_deformation_field_file_path = self.make_path('{}_inverse_deformation_field.nii')
+        self.inverse_transform_img_path = self.make_path('{}_inverse_transformed.nii')
+
         self.affine_log_file_path, self.affine_error_path = self.compute_log_file_paths('affine')
         self.freeform_log_file_path, self.freeform_error_file_path = self.compute_log_file_paths('freeform')
         self.segmentation_log_file, self.segmentation_error_file = self.compute_log_file_paths('segment')
+        self.deformation_error_file_path, self.deformation_log_file_path = self.compute_log_file_paths('deformation')
+        self.inv_deformation_error_file_path, self.inv_deformation_log_file_path = \
+            self.compute_log_file_paths('inverse_deformation')
 
         # self.sanitise_inputs()
 
@@ -235,3 +246,64 @@ class BrainRegistration(object):
         boundaries_mask = sk_segmentation.find_boundaries(morphed_atlas, mode='inner')
         boundaries = morphed_atlas * boundaries_mask
         bio.to_nii(boundaries, self.outlines_file_path, scale=atlas_scale)
+
+    def _prepare_deformation_command(self):
+        cmd = '{} -ref {} -def {} {}'.format(
+            self.reg_params.deformation_program_path,
+            self.dataset_img_path,
+            self.control_point_file_path,
+            self.deformation_field_file_path
+        )
+        return cmd
+
+    def generate_deformation_field(self):  # FIXME: check  + verify that useful
+        """
+        Generate the lookup table of point coordinates of the deformation.
+        In theory, one could use that to lookup the new coordinates of cells
+        Should be 3 color channel image for x, y, z
+
+        :return:
+        """
+        try:
+            safe_execute_command(self._prepare_deformation_command(),
+                                 self.deformation_log_file_path, self.deformation_error_file_path)
+        except SafeExecuteCommandError as err:
+            raise TransformError('Deformation field creation failed; {}'.format(err))
+
+    def _prepare_inverse_deformation_field_command(self):
+        # WARNING: May need invAff, then invNrr, then comp
+        cmd = '{} -ref {} -invNrr {} {} {}'.format(
+            self.reg_params.deformation_program_path,
+            self.dataset_img_path,
+            self.control_point_file_path,  # TEST: either that or deformation_field_file_path after generate_deformation_field
+            self.brain_of_atlas_img_path,
+            self.inverse_deformation_field_file_path
+        )
+        return cmd
+
+    def generate_inverse_deformation_field(self):
+        try:
+            safe_execute_command(self._prepare_inverse_deformation_field_command(),
+                                 self.inv_deformation_log_file_path, self.inv_deformation_error_file_path)
+        except SafeExecuteCommandError as err:
+            raise TransformError('Inverse deformation field creation failed; {}'.format(err))
+
+    def generate_inverse_deformation(self):
+        if not os.path.exists(self.inverse_deformation_field_file_path):
+            self.generate_inverse_deformation_field()
+        try:
+            safe_execute_command(self._prepare_inverse_deformation_command(self.dataset_img_path,
+                                                                           self.inverse_transform_img_path),
+                                 self.inv_deformation_log_file_path, self.inv_deformation_error_file_path)
+        except SafeExecuteCommandError as err:
+            raise TransformError('Inverse deformation failed; {}'.format(err))
+
+    def _prepare_inverse_deformation_command(self, floating_image_path, dest_img_path):
+        cmd = '{} {} -trans {} -flo {} -ref {} -res {}'.format(
+            self.reg_params.segmentation_program_path, self.reg_params.format_segmentation_params().strip(),
+            self.inverse_deformation_field_file_path,
+            floating_image_path,
+            self.brain_of_atlas_img_path,
+            dest_img_path
+        )
+        return cmd
