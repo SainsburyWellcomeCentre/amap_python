@@ -38,8 +38,8 @@ class BrainRegistration(object):
         self.hemispheres_img_path = self.reg_params.hemispheres_path
 
         # TODO: put these suffixes in config
-        self.affine_registered_img_path = self.make_path('{}_affine_registered_atlas_brain.nii')
-        self.freeform_registered_img_path = self.make_path('{}_freeform_registered_atlas_brain.nii')
+        self.affine_registered_atlas_brain_path = self.make_path('{}_affine_registered_atlas_brain.nii')
+        self.freeform_registered_atlas_brain_path = self.make_path('{}_freeform_registered_atlas_brain.nii')
         self.registered_atlas_img_path = self.make_path('{}_registered_atlas.nii')
         self.registered_hemispheres_img_path = self.make_path('{}_registered_hemispheres.nii')
 
@@ -106,7 +106,7 @@ class BrainRegistration(object):
             self.brain_of_atlas_img_path,
             self.dataset_img_path,
             self.affine_matrix_path,
-            self.affine_registered_img_path
+            self.affine_registered_atlas_brain_path
         )
         return cmd
 
@@ -131,7 +131,7 @@ class BrainRegistration(object):
             self.brain_of_atlas_img_path,
             self.dataset_img_path,
             self.control_point_file_path,
-            self.freeform_registered_img_path
+            self.freeform_registered_atlas_brain_path
         )
         return cmd
 
