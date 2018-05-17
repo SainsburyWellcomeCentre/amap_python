@@ -37,6 +37,7 @@ def expected_conf():
             'brain_path': '',
             'hemispheres_path': '',
             'outlines_path': '',
+            'orientation': 'horizontal',
             'pixel_size': {
                 'x': 0.010,
                 'y': 0.010,
