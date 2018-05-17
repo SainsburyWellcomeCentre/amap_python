@@ -240,7 +240,7 @@ def to_nii(img, dest_path, scale=None, affine_transform=None):  # TODO: see if w
     :param img: A nifty image object or numpy array brain
     :param str dest_path: The path where to save the brain.
     :param tuple scale: A tuple of floats to indicate the 'zooms' of the nifty image
-    :param np.ndarray affine_transform: A 4x4 matrix indicating the transform to save in the metadata of the image
+    :param np.ndarray affine_transform: A 4x4 matrix indicating the transform to save in the metadata of the image (required only if not nibabel input)
     :return:
     """
     if affine_transform is None:
