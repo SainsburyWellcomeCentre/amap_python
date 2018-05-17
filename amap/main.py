@@ -51,8 +51,8 @@ def get_parser():
                              'the value must be specified in mm.')
     parser.add_argument('-o', '--orientation', type=str, choices=('coronal', 'sagittal', 'horizontal'),
                         default='coronal',
-                        help='The orientation of the sample brain. This is used to transpose the brain'
-                             'into the same orientation as the atlas.')
+                        help='The orientation of the sample brain. This is used to transpose the atlas'
+                             'into the same orientation as the brain.')
     parser.add_argument('--flip-x', dest='flip_x', action='store_true',
                         help='Whether to flip the sample brain along the first dimension.')  # Warning: atlas reference
     parser.add_argument('--flip-y', dest='flip_y', action='store_true',
@@ -154,7 +154,9 @@ def process(_args):
                                original_orientation=_args.orientation,
                                load_parallel=_args.load_parallel,
                                sort_input_file=_args.sort_input_file)
-        brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
+        # brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
+        brain.flip_atlas((_args.flip_x, _args.flip_y, _args.flip_z))  # TEST: check that axes match
+        brain.atlas.save_all()
         if _args.save_unfiltered:
             downsampled_brain_path = os.path.join(_args.output_folder, '{}_{}.nii'
                                                   .format(sample_name, 'downsampled'))  # FIXME: extract

@@ -13,7 +13,7 @@ class RegistrationParams(object):
     including the paths of the different binaries and atlases.
     Options are typically stored as a tuple of (option_string, option_value)
     """
-    def __init__(self):
+    def __init__(self, output_folder=''):
         from amap.config.config import config_obj  # Avoids import in tests
         self.config = config_obj
 
@@ -43,7 +43,7 @@ class RegistrationParams(object):
         # segmentation (reg_resample)
         self.segmentation_interpolation_order = ('-inter', 0)
 
-        atlas = Atlas()
+        atlas = Atlas(src_folder=output_folder)  # The atlas has been saved to the output folder
 
         self.default_atlas_path = atlas.get_default_atlas_path()
         self.default_atlas_brain_path = atlas.get_default_brain_path()

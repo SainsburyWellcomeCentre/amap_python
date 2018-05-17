@@ -46,8 +46,9 @@ class BrainProcessor(object):
 
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling,
                                          load_parallel=load_parallel, sort_input_file=sort_input_file)
-        self.swap_orientation_from_original_to_atlas()
+        # self.swap_orientation_from_original_to_atlas()
         self.atlas.load_all()
+        self.swap_atlas_orientation_to_self()
         self.output_folder = output_folder
 
     def flip(self, axes):
@@ -60,6 +61,12 @@ class BrainProcessor(object):
             if flip_axis:
                 # print("Flipping axis {}".format('xyz'[axis_idx]))
                 self.target_brain = np.flip(self.target_brain, axis_idx)
+
+    def flip_atlas(self, axes):
+        self.atlas.flip(axes)
+
+    def swap_atlas_orientation_to_self(self):
+        self.atlas.reorientate_to_sample(self.original_orientation)
 
     def swap_orientation_from_original_to_atlas(self, atlas_orientation='horizontal'):
         """
@@ -104,9 +111,9 @@ class BrainProcessor(object):
         Applies a set of filters to the brain to avoid overfitting details in the image during
         registration.
         """
-        self.swap_orientation_from_atlas_to_original()  # process along original z dimension
+        # self.swap_orientation_from_atlas_to_original()  # process along original z dimension
         self.target_brain = BrainProcessor.filter_for_registration(self.target_brain)
-        self.swap_orientation_from_original_to_atlas()  # reset to atlas orientation
+        # self.swap_orientation_from_original_to_atlas()  # reset to atlas orientation
 
     @staticmethod
     def filter_for_registration(brain):

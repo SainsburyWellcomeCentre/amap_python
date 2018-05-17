@@ -196,7 +196,7 @@ class BrainRegistration(object):
         :return: The registration params
         :rtype: RegistrationParams
         """
-        return RegistrationParams()
+        return RegistrationParams(self.output_folder)
 
     def generate_outlines(self):
         """
