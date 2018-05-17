@@ -11,7 +11,7 @@ from skimage import morphology
 from tqdm import trange
 
 from amap.brain import brain_io as bio
-from amap.config.atlas import make_atlas_scale_transformation_matrix, get_atlas_pix_sizes
+from amap.config.atlas import Atlas
 
 
 class BrainProcessor(object):
@@ -36,7 +36,8 @@ class BrainProcessor(object):
         """
         self.target_brain_path = target_brain_path
 
-        atlas_pixel_sizes = get_atlas_pix_sizes()
+        self.atlas = Atlas(dest_folder=output_folder)
+        atlas_pixel_sizes = self.atlas.pix_sizes
         x_scaling = x_pix_mm / atlas_pixel_sizes['x']  # FIXME: round to um
         y_scaling = y_pix_mm / atlas_pixel_sizes['y']
         z_scaling = z_pix_mm / atlas_pixel_sizes['z']
@@ -46,6 +47,7 @@ class BrainProcessor(object):
         self.target_brain = bio.load_any(self.target_brain_path, x_scaling, y_scaling, z_scaling,
                                          load_parallel=load_parallel, sort_input_file=sort_input_file)
         self.swap_orientation_from_original_to_atlas()
+        self.atlas.load_all()
         self.output_folder = output_folder
 
     def flip(self, axes):
@@ -130,8 +132,8 @@ class BrainProcessor(object):
 
         :param str dest_path: Where to save the image on the filesystem
         """
-        atlas_pix_sizes = get_atlas_pix_sizes()
-        transformation_matrix = make_atlas_scale_transformation_matrix()
+        atlas_pix_sizes = self.atlas.pix_sizes
+        transformation_matrix = self.atlas.make_atlas_scale_transformation_matrix()
         bio.to_nii(self.target_brain, dest_path,
                    scale=(atlas_pix_sizes['x'], atlas_pix_sizes['y'], atlas_pix_sizes['z']),
                    affine_transform=transformation_matrix)

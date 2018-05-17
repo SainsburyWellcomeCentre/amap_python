@@ -4,8 +4,7 @@ registration_params
 
 The module to handle all the registration options and program binaries
 """
-from amap.config.atlas import get_atlas_element_path, get_atlas_element_path_or_default, \
-    get_atlas_pixel_sizes_from_config
+from amap.config.atlas import Atlas
 
 
 class RegistrationParams(object):
@@ -44,15 +43,17 @@ class RegistrationParams(object):
         # segmentation (reg_resample)
         self.segmentation_interpolation_order = ('-inter', 0)
 
-        self.default_atlas_path = get_atlas_element_path('default_atlas_name')
-        self.default_atlas_brain_path = get_atlas_element_path('default_brain_name')
-        self.default_hemispheres_path = get_atlas_element_path('default_hemispheres_name')
+        atlas = Atlas()
 
-        self.atlas_path = get_atlas_element_path_or_default('atlas_path')
-        self.atlas_brain_path = get_atlas_element_path_or_default('brain_path')
-        self.hemispheres_path = get_atlas_element_path_or_default('hemispheres_path')
+        self.default_atlas_path = atlas.get_default_atlas_path()
+        self.default_atlas_brain_path = atlas.get_default_brain_path()
+        self.default_hemispheres_path = atlas.get_default_hemispheres_path()
 
-        pixel_sizes = get_atlas_pixel_sizes_from_config()  # WARNING: mm
+        self.atlas_path = atlas.get_path()
+        self.atlas_brain_path = atlas.get_brain_path()
+        self.hemispheres_path = atlas.get_hemispheres_path()
+
+        pixel_sizes = atlas.get_pixel_sizes_from_config()  # WARNING: mm
         self.atlas_x_pix_size = pixel_sizes['x']
         self.atlas_y_pix_size = pixel_sizes['y']
         self.atlas_z_pix_size = pixel_sizes['z']

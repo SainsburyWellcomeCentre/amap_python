@@ -35,6 +35,7 @@ def test_get_atlas_pix_sizes(monkeypatch):
                                                                    'data',
                                                                    'atlas',
                                                                    'allen_cff_october_2017_atlas_annotations_10_um.nii')})
-    for key, expected_key in zip(sorted(amap.config.atlas.get_atlas_pix_sizes().keys()), ('x', 'y', 'z')):
+    atlas = amap.config.atlas.Atlas()
+    for key, expected_key in zip(sorted(atlas.pix_sizes.keys()), ('x', 'y', 'z')):
         assert key == expected_key
-    assert (isinstance(v, float) for v in amap.config.atlas.get_atlas_pix_sizes().values())
+    assert (isinstance(v, float) for v in atlas.pix_sizes.values())
