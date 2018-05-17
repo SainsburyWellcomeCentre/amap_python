@@ -31,6 +31,8 @@ class RegistrationParamsMock(registration_params.RegistrationParams):
         self.reference_image_histo_n_bins = ('--rbn', 128)
         self.floating_image_histo_n_bins = ('--fbn', 128)
 
+        self.segmentation_interpolation_order = ('-inter', 0)
+
         self.default_atlas_path = '/home/lambda/amap/default_atlas.nii'
         self.atlas_path = '/home/lambda/amap/atlas.nii'
         self.atlas_brain_path = '/home/lambda/amap/atlas_brain.nii'
