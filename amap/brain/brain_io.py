@@ -11,15 +11,17 @@ import psutil
 import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 
-import warnings
-
 import numpy as np
 from skimage import transform
 
 import tifffile
-import nibabel as nib
 from tqdm import tqdm
 from natsort import natsorted
+
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    import nibabel as nib
 
 
 class BrainIoLoadException(Exception):
