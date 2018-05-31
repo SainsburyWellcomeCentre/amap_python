@@ -66,12 +66,12 @@ def disk_free_gb(file_path):
     return (stats.f_frsize * stats.f_bavail) / 1024**3
 
 
-def amend_cfg(new_atlas_folder):
-    cfg_file_path = os.path.join('.', 'amap', 'config', 'amap.conf')
+def amend_cfg(new_atlas_folder, cfg_folder):
+    cfg_file_path = os.path.join(cfg_folder, 'amap.conf')
     with open(cfg_file_path, 'r') as in_conf:
         data = in_conf.readlines()
     for i, line in enumerate(data):
-        data[i] = line.replace("'./data/atlas/'", "'{}'".format(new_atlas_folder))
+        data[i] = line.replace("base_folder = '~/.amap", "base_folder = '{}".format(new_atlas_folder))
     with open(cfg_file_path, 'w') as out_conf:
         out_conf.writelines(data)
 
@@ -98,7 +98,7 @@ parser = argparse.ArgumentParser(argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--install-atlas', dest='install_atlas', action='store_true',
                     help='Automatically download and install the atlas')
 parser.add_argument('--atlas-install-path', dest='atlas_install_path', type=str,
-                    default='~/.amap/atlas',
+                    default='~/.amap',
                     help='The path to install the atlas to. (Requires 20GB disk space).')
 parser.add_argument('--atlas-download-path', dest='atlas_download_path', type=str,
                     default=os.path.join(temp_dir_path, 'atlas.tar.bz2'),
@@ -116,10 +116,10 @@ args.atlas_download_path = fix_path(args.atlas_download_path)
 args.amap_config_folder = fix_path(args.amap_config_folder)
 if args.dev_mode:
     requirements.append('pytest')
+install_cfg(args.amap_config_folder)
 if args.install_atlas:
     install_atlas(args.atlas_download_path, args.atlas_install_path)
-    amend_cfg(args.atlas_install_path)
-install_cfg(args.amap_config_folder)
+    amend_cfg(args.atlas_install_path, args.amap_config_folder)
 
 
 setup(
