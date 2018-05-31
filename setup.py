@@ -22,7 +22,7 @@ requirements = [
 
 
 ATLAS_DOWNLOAD_REQUIRED_GB = 1.3
-ATLAS_INSTALL_REQUIRED_BG = 20.5
+ATLAS_INSTALL_REQUIRED_GB = 20.5
 ATLAS_BASE_URL = 'https://www.dropbox.com/s/sjhh9uy7e2ri75u/atlas.tar.bz2?dl={}'
 
 
@@ -54,7 +54,7 @@ def install_atlas(atlas_download_path, atlas_install_path):  # TODO: check that 
     if disk_free_gb(os.path.dirname(atlas_download_path)) < ATLAS_DOWNLOAD_REQUIRED_GB:
         raise AtlasInstallError("Insufficient disk space in {} to download atlas"
                                 .format(os.path.dirname(atlas_download_path)))
-    if disk_free_gb(atlas_install_path) < ATLAS_INSTALL_REQUIRED_BG:
+    if disk_free_gb(atlas_install_path) < ATLAS_INSTALL_REQUIRED_GB:
         raise AtlasInstallError("Insufficient disk space in {} to install atlas".format(atlas_install_path))
     download_atlas(atlas_download_path)
     extract_atlas(atlas_download_path, atlas_install_path)
