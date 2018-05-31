@@ -78,6 +78,10 @@ def get_parser():
 
     parser.add_argument('-r', '--register', action='store_true', help='Register the atlas to the sample.'  # FIXME: transform to skip registration
                                                                       '(affine and freeform)')
+    parser.add_argument('--atlas-mask-planes', dest='atlas_mask_planes', type=int, nargs=2, default=(0, -1),
+                        help='The START and END of the range of planes to keep for the registration.'
+                             'The planes before START and after END will be masked. It defaults to the whole range'
+                             'meaning nothing will be masked.')
 
     return parser
 
@@ -168,8 +172,9 @@ def process(_args):
         brain.save(filtered_brain_path)
     else:
         filtered_brain_path = _args.target_brain_path
-
-    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder)
+    brain_reg = BrainRegistration(sample_name, filtered_brain_path, _args.output_folder,
+                                  atlas_start_slice=_args.atlas_mask_planes[0],
+                                  atlas_end_slice=_args.atlas_mask_planes[1])
     if _args.register:
         print("Registering")
         print("\tStarting affine registration")

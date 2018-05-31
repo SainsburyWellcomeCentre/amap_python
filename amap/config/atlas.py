@@ -74,6 +74,9 @@ class Atlas(object):
     def get_default_hemispheres_path(self):
         return self.get_atlas_element_path('default_hemispheres_name')
 
+    def get_mask_path(self):
+        return self.get_atlas_element_path_or_default('mask_path')
+
     def get_data(self):
         """
         Load the atlas and return it

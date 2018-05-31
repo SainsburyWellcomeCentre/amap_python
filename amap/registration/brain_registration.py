@@ -7,6 +7,7 @@ The module to actually start the registration
 import os
 import sys
 
+import numpy as np
 from skimage import segmentation as sk_segmentation
 
 from amap.brain import brain_io as bio
@@ -23,11 +24,23 @@ class SegmentationError(RegistrationError):
     pass
 
 
+def make_atlas_mask(atlas_img_path, mask_path, atlas_start_slice, atlas_end_slice):
+    atlas = bio.load_nii(atlas_img_path, as_array=False)
+    atlas_mask = atlas.get_data().astype(np.uint16)
+
+    mask_low_value = 0
+    mask_high_value = 2**16 - 1
+    atlas_mask[:, :atlas_start_slice, :] = mask_low_value  # FIXME: only valid for horizontal atlas
+    atlas_mask[:, atlas_start_slice:atlas_end_slice, :] = mask_high_value
+    atlas_mask[:, atlas_end_slice:, :] = mask_low_value
+    bio.to_nii(atlas, mask_path)
+
+
 class BrainRegistration(object):
     """
     A class to register brains using the nifty_reg set of binaries
     """
-    def __init__(self, sample_name, target_brain_path, output_folder):
+    def __init__(self, sample_name, target_brain_path, output_folder, atlas_start_slice=0, atlas_end_slice=-1):
         self.sample_name = sample_name
         self.output_folder = output_folder
         self.reg_params = self.get_reg_params()
@@ -36,6 +49,14 @@ class BrainRegistration(object):
         self.brain_of_atlas_img_path = self.reg_params.atlas_brain_path
         self.atlas_img_path = self.reg_params.atlas_path
         self.hemispheres_img_path = self.reg_params.hemispheres_path
+
+        if atlas_start_slice != 0 or atlas_end_slice != -1:
+            make_atlas_mask(self.atlas_img_path,
+                            self.reg_params.atlas_mask_path,
+                            atlas_start_slice, atlas_end_slice)
+            self.atlas_mask_path = self.reg_params.atlas_mask_path
+        else:
+            self.atlas_mask_path = ''
 
         # TODO: put these suffixes in config
         self.affine_registered_atlas_brain_path = self.make_path('{}_affine_registered_atlas_brain.nii')
@@ -108,6 +129,8 @@ class BrainRegistration(object):
             self.affine_matrix_path,
             self.affine_registered_atlas_brain_path
         )
+        if self.atlas_mask_path:
+            cmd += ' -fmask {}'.format(self.atlas_mask_path)
         return cmd
 
     def register_affine(self):
@@ -133,6 +156,8 @@ class BrainRegistration(object):
             self.control_point_file_path,
             self.freeform_registered_atlas_brain_path
         )
+        if self.atlas_mask_path:
+            cmd += ' -fmask {}'.format(self.atlas_mask_path)
         return cmd
 
     def register_freeform(self):

@@ -52,6 +52,7 @@ class RegistrationParams(object):
         self.atlas_path = atlas.get_path()
         self.atlas_brain_path = atlas.get_brain_path()
         self.hemispheres_path = atlas.get_hemispheres_path()
+        self.atlas_mask_path = atlas.get_mask_path()
 
         pixel_sizes = atlas.get_pixel_sizes_from_config()  # WARNING: mm
         self.atlas_x_pix_size = pixel_sizes['x']
