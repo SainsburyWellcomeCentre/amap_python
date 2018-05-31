@@ -102,7 +102,7 @@ class Atlas(object):
         for axis_idx, flip_axis in enumerate(axes):
             if flip_axis:
                 for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-                    brain = np.flip(brain, axis_idx)  # TEST:
+                    brain = np.flip(brain, axis_idx)
 
     def reorientate_to_sample(self, sample_orientation):  # TODO: do using only nifty header
         transpositions = {
@@ -112,7 +112,7 @@ class Atlas(object):
         }
         transposition = transpositions[sample_orientation]
         for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-            brain = np.transpose(brain, transposition)  # TEST:
+            brain = np.transpose(brain, transposition)
 
     def reorientate_to_self(self, sample_orientation):
         transpositions = {
@@ -122,7 +122,7 @@ class Atlas(object):
         }
         transposition = transpositions[sample_orientation]
         for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-            brain = np.transpose(brain, transposition)  # TEST:
+            brain = np.transpose(brain, transposition)
 
     def get_dest_path(self, atlas_element_name):
         if not self.dest_folder:

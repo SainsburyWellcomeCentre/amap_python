@@ -190,7 +190,7 @@ def threaded_load_from_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_
     stacks = []
     n_free_cpus_min = 1  # TODO: set as option
     n_processes = mp.cpu_count() - n_free_cpus_min
-    pool = ProcessPoolExecutor(max_workers=n_processes)  # FIXME: will not work with interactive interpreter.
+    pool = ProcessPoolExecutor(max_workers=n_processes)  # WARNING: will not work with interactive interpreter.
     # FIXME: should detect and switch to other method
 
     n_paths_per_subsequence = math.floor(len(paths_sequence) / n_processes)
