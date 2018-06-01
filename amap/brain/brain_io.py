@@ -233,6 +233,25 @@ def load_from_paths_sequence(paths_sequence, x_scaling_factor=1.0, y_scaling_fac
     return volume
 
 
+def generate_paths_sequence_file(input_folder, output_file_path, sort=True, prefix=None, suffix=None, match_string=None):
+        paths = []
+        for root, dirs, files in os.walk(input_folder):
+            for filename in files:
+                if prefix is not None and not filename.startswith(prefix):
+                    continue
+                if suffix is not None and not filename.endswith(suffix):
+                    continue
+                if match_string is not None and match_string not in filename:
+                    continue
+                paths.append(os.path.join(root, filename))
+
+        if sort:
+            paths = natsorted(paths)
+
+        with open(output_file_path, 'w') as out_file:
+            out_file.writelines(paths)
+
+
 # ######################## OUTPUT METHODS ########################
 def to_nii(img, dest_path, scale=None, affine_transform=None):  # TODO: see if we want also real units scale
     """
