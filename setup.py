@@ -24,6 +24,7 @@ requirements = [
 ATLAS_DOWNLOAD_REQUIRED_GB = 1.3
 ATLAS_INSTALL_REQUIRED_GB = 20.5
 ATLAS_BASE_URL = 'https://www.dropbox.com/s/sjhh9uy7e2ri75u/atlas.tar.bz2?dl={}'
+DEFAULT_CONFIG_FOLDER = '~/.amap'
 
 
 class AtlasInstallError(Exception):
@@ -66,12 +67,12 @@ def disk_free_gb(file_path):
     return (stats.f_frsize * stats.f_bavail) / 1024**3
 
 
-def amend_cfg(new_atlas_folder, cfg_folder):
+def amend_cfg(cfg_folder, new_atlas_folder):
     cfg_file_path = os.path.join(cfg_folder, 'amap.conf')
     with open(cfg_file_path, 'r') as in_conf:
         data = in_conf.readlines()
     for i, line in enumerate(data):
-        data[i] = line.replace("base_folder = '~/.amap", "base_folder = '{}".format(new_atlas_folder))
+        data[i] = line.replace("base_folder = '{}".format(DEFAULT_CONFIG_FOLDER), "base_folder = '{}".format(new_atlas_folder))
     with open(cfg_file_path, 'w') as out_conf:
         out_conf.writelines(data)
 
@@ -98,7 +99,7 @@ parser = argparse.ArgumentParser(argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--install-atlas', dest='install_atlas', action='store_true',
                     help='Automatically download and install the atlas')
 parser.add_argument('--atlas-install-path', dest='atlas_install_path', type=str,
-                    default='~/.amap',
+                    default=DEFAULT_CONFIG_FOLDER,
                     help='The path to install the atlas to. (Requires 20GB disk space).')
 parser.add_argument('--atlas-download-path', dest='atlas_download_path', type=str,
                     default=os.path.join(temp_dir_path, 'atlas.tar.bz2'),
@@ -106,7 +107,7 @@ parser.add_argument('--atlas-download-path', dest='atlas_download_path', type=st
 parser.add_argument('--dev-mode', dest='dev_mode', action='store_true',
                     help='Whether to download the dependencies for developing amap.')
 parser.add_argument('--amap-config-folder', dest='amap_config_folder', type=str,
-                    default='~/.amap/',
+                    default=DEFAULT_CONFIG_FOLDER,
                     help='The location to store the amap config file.')
 args, setuptools_args = parser.parse_known_args()
 sys.argv = sys.argv[:1] + setuptools_args  # Strip these arguments from sys.argv for setuptools
