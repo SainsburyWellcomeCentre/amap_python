@@ -120,7 +120,7 @@ if args.dev_mode:
 install_cfg(args.amap_config_folder)
 if args.install_atlas:
     install_atlas(args.atlas_download_path, args.atlas_install_path)
-    amend_cfg(args.atlas_install_path, args.amap_config_folder)
+    amend_cfg(args.amap_config_folder, args.atlas_install_path)
 
 
 setup(
