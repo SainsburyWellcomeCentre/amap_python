@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import nibabel as nb
 
 from amap.config.config import config_obj
 import amap.brain.brain_io as bio
@@ -101,31 +102,44 @@ class Atlas(object):
         bio.to_nii(self._brain_data, self.get_dest_path('brain'))
         bio.to_nii(self._hemispheres_data, self.get_dest_path('hemispheres'))
 
+    def _flip(self, nii_img, axis_idx):
+        return nb.Nifti1Image(np.flip(nii_img.get_data(), axis_idx),  # FIXME: should be just changing the header
+                              nii_img.affine, nii_img.header)
+
+    def _flip_all(self, axis_idx):
+        self._data = self._flip(self._data, axis_idx)
+        self._brain_data = self._flip(self._brain_data, axis_idx)
+        self._hemispheres_data = self._flip(self._hemispheres_data, axis_idx)
+
     def flip(self, axes):
         for axis_idx, flip_axis in enumerate(axes):
             if flip_axis:
-                for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-                    brain = np.flip(brain, axis_idx)
+                self._flip_all(axis_idx)
 
-    def reorientate_to_sample(self, sample_orientation):  # TODO: do using only nifty header
-        transpositions = {
-            'horizontal': (1, 0, 2),  # FIXME:
-            'coronal': (0, 2, 1),
-            'sagittal': (2, 1, 0)  # FIXME:
-        }
-        transposition = transpositions[sample_orientation]
-        for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-            brain = np.transpose(brain, transposition)
+    def _transpose(self, nii_img, transposition):
+            return nb.Nifti1Image(np.transpose(nii_img.get_data(), transposition),
+                                  nii_img.affine, nii_img.header)  # FIXME: should be just changing the header
 
-    def reorientate_to_self(self, sample_orientation):
+    def _transpose_all(self, transposition):
+        self._data = self._transpose(self._data, transposition)
+        self._brain_data = self._transpose(self._brain_data, transposition)
+        self._hemispheres_data = self._transpose(self._hemispheres_data, transposition)
+
+    def reorientate_to_sample(self, sample_orientation):
         transpositions = {
             'horizontal': (1, 0, 2),  # FIXME:
             'coronal': (2, 0, 1),
             'sagittal': (2, 1, 0)  # FIXME:
         }
-        transposition = transpositions[sample_orientation]
-        for brain in (self._data.get_data(), self._brain_data.get_data(), self._hemispheres_data.get_data()):
-            brain = np.transpose(brain, transposition)
+        self._transpose_all(transpositions[sample_orientation])
+
+    def reorientate_to_self(self, sample_orientation):
+        transpositions = {
+            'horizontal': (1, 0, 2),  # FIXME:
+            'coronal': (2, 0, 1),  # FIXME:
+            'sagittal': (2, 1, 0)  # FIXME:
+        }
+        self._transpose_all(transpositions[sample_orientation])
 
     def get_dest_path(self, atlas_element_name):
         if not self.dest_folder:

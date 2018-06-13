@@ -158,7 +158,7 @@ def process(_args):
                                original_orientation=_args.orientation,
                                load_parallel=_args.load_parallel,
                                sort_input_file=_args.sort_input_file)
-        # brain.flip((_args.flip_x, _args.flip_y, _args.flip_z))
+        brain.swap_atlas_orientation_to_self()
         brain.flip_atlas((_args.flip_x, _args.flip_y, _args.flip_z))  # TEST: check that axes match
         brain.atlas.save_all()
         if _args.save_unfiltered:

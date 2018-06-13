@@ -48,7 +48,6 @@ class BrainProcessor(object):
                                          load_parallel=load_parallel, sort_input_file=sort_input_file)
         # self.swap_orientation_from_original_to_atlas()
         self.atlas.load_all()
-        self.swap_atlas_orientation_to_self()
         self.output_folder = output_folder
 
     def flip(self, axes):
