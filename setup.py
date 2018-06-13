@@ -124,7 +124,7 @@ install_cfg(args.amap_config_folder)
 
 setup(
     name='amap',
-    version='1.0.0',
+    version='1.2.0',
     packages=find_packages(exclude=('doc', 'tests*')),
     install_requires=requirements,
     url='',
