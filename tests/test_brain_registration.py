@@ -22,7 +22,7 @@ def brain_reg_fixture():
 
 
 def test_register_affine(brain_reg_fixture):
-    expected_output = '/usr/local/bin/reg_aladin -ln 6 -lp 5 ' \
+    expected_output = '/usr/local/nifty_reg/reg_aladin -ln 6 -lp 5 ' \
                       '-flo /home/lambda/amap/atlas_brain.nii -ref /home/bob/brains/test_brain_downsampled.nii ' \
                       '-aff /home/bob/output_brains/test_brain_affine_matrix.txt ' \
                       '-res /home/bob/output_brains/test_brain_affine_registered_atlas_brain.nii'
@@ -30,7 +30,7 @@ def test_register_affine(brain_reg_fixture):
 
 
 def test_register_freeform(brain_reg_fixture):
-    expected_output = '/usr/local/bin/reg_f3d -ln 6 -lp 4 -sx -10 -be 0.95 ' \
+    expected_output = '/usr/local/nifty_reg/reg_f3d -ln 6 -lp 4 -sx -10 -be 0.95 ' \
                       '-smooR -1.0 -smooF -0.0 --rbn 128 --fbn 128' \
                       ' -aff /home/bob/output_brains/test_brain_affine_matrix.txt' \
                       ' -flo /home/lambda/amap/atlas_brain.nii -ref /home/bob/brains/test_brain_downsampled.nii' \
@@ -40,7 +40,7 @@ def test_register_freeform(brain_reg_fixture):
 
 
 def test_segment(brain_reg_fixture):
-    expected_output = '/usr/local/bin/reg_resample -inter 0 ' \
+    expected_output = '/usr/local/nifty_reg/reg_resample -inter 0 ' \
                       '-cpp /home/bob/output_brains/test_brain_control_point_file.nii ' \
                       '-flo /home/lambda/amap/atlas.nii -ref /home/bob/brains/test_brain_downsampled.nii ' \
                       '-res /home/bob/output_brains/test_brain_registered_atlas.nii'

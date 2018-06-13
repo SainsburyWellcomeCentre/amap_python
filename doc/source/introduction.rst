@@ -16,8 +16,8 @@ reliability is shown to be on par with expert human raters
 `(publication) <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4941048/>`__.
 aMAP, internally uses NiftyReg (a rapid image registration toolkit, originally developed for human MRI data),
 that we modified to enable rapid processing of high-resolution 3D light microscopy data.
-NiftyReg being originally developed for MRI data, it uses the Neuroimaging Informatics Technology Initiative (NIfTI)
-image format which is often referred to by its .nii file extension.
+NiftyReg being originally developed for MRI data, it uses the Neuroimaging Informatics Technology Initiative `(NIfTI)
+image format <https://nifti.nimh.nih.gov/nifti-1/>`__ which is often referred to by its .nii file extension.
 
 aMAP has been verified using a smoothed version of the atlas developed by
 `Kim et al (2014) <http://www.cell.com/cell-reports/abstract/S2211-1247%2814%2901043-2>`__, (see below).
@@ -26,6 +26,6 @@ and follow the nomenclature of the Allen Mouse Brain Atlas.
 
 aMAP consists of 4 parts:
     #. The main program (this repository)
-    #. The binaries for the registration software (NiftyReg)
-    #. The atlas used in the publication
+    #. The binaries for the registration software (NiftyReg) (also included in this repository)
+    #. The atlas used in the publication (which can be downloaded automatically by the installation script)
     #. Test data

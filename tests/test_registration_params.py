@@ -5,14 +5,14 @@ from amap.registration import registration_params
 
 class RegistrationParamsMock(registration_params.RegistrationParams):
     def __init__(self):
-        self.affine_reg_program_path = '/usr/local/bin/reg_aladin'
-        self.freeform_reg_program_path = '/usr/local/bin/reg_f3d'
-        self.segmentation_program_path = '/usr/local/bin/reg_resample'
+        self.affine_reg_program_path = '/usr/local/nifty_reg/reg_aladin'
+        self.freeform_reg_program_path = '/usr/local/nifty_reg/reg_f3d'
+        self.segmentation_program_path = '/usr/local/nifty_reg/reg_resample'
 
         self.config = {
-            'affine': '/usr/local/bin/reg_aladin',
-            'freeform': '/usr/local/bin/reg_f3d',
-            'segmentation': '/usr/local/bin/reg_resample'
+            'affine': '/usr/local/nifty_reg/reg_aladin',
+            'freeform': '/usr/local/nifty_reg/reg_f3d',
+            'segmentation': '/usr/local/nifty_reg/reg_resample'
         }
 
         self.affine_reg_pyramid_steps = ('-ln', 6)
@@ -30,6 +30,8 @@ class RegistrationParamsMock(registration_params.RegistrationParams):
 
         self.reference_image_histo_n_bins = ('--rbn', 128)
         self.floating_image_histo_n_bins = ('--fbn', 128)
+
+        self.segmentation_interpolation_order = ('-inter', 0)
 
         self.default_atlas_path = '/home/lambda/amap/default_atlas.nii'
         self.atlas_path = '/home/lambda/amap/atlas.nii'

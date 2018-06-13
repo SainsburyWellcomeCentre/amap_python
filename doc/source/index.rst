@@ -5,18 +5,15 @@
 
 
 .. include:: introduction.rst
-
 .. include:: installation.rst
-
 .. include:: prerequisites.rst
-
-.. include:: usage.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
+   usage
+   api
 
 Indices and tables
 ==================

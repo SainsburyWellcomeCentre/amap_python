@@ -7,7 +7,7 @@ Prerequisites
     A workstation computer (e.g. Mac Pro or Dell Precision) with at least 16GB of RAM is necessary.
     For smooth viewing of .nii fils in matlab, we recommend at least 24GB of RAM.
 
-aMAP has been tested on Mac (OS X Yosemite) and Linux (Debian Jessie) machines, for which binaries are provided.
+aMAP has been tested on Mac (OS X Yosemite) and Linux (Ubuntu 16.04) machines, for which binaries are provided.
 The NiftyReg command line interface has been designed to also run on Windows, but this has not yet been tested by us
 and will require compilation from source.
 
