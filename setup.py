@@ -125,7 +125,7 @@ if args.install_atlas:
 
 setup(
     name='amap',
-    version='1.0.0',
+    version='1.2.0',
     packages=find_packages(exclude=('doc', 'tests*')),
     install_requires=requirements,
     url='',
