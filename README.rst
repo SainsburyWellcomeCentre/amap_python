@@ -1,3 +1,6 @@
+This is no longer maintained. Please see `here <https://github.com/SainsburyWellcomeCentre/amap-python>`__ for the current version.
+===================================
+
 Welcome to the aMAP companion guide
 ===================================
 This guide contains all the information needed to perform automated mouse atlas propagation on full-brain 3D datasets.
