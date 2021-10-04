@@ -1,4 +1,4 @@
-This is no longer maintained. Please see `here <https://github.com/SainsburyWellcomeCentre/amap-python>`__ for the current version.
+This is no longer maintained. Please see `here <https://github.com/brainglobe/brainreg>`__ for the current version.
 ===================================
 
 Welcome to the aMAP companion guide
